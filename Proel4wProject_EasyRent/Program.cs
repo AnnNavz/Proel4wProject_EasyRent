@@ -1,4 +1,9 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Proel4wProject_EasyRent.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<Proel4wProject_EasyRentContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Proel4wProject_EasyRentContext") ?? throw new InvalidOperationException("Connection string 'Proel4wProject_EasyRentContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
