@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proel4wProject_EasyRent", "Proel4wProject_EasyRent\Proel4wProject_EasyRent.csproj", "{5F947F20-004E-45F9-BA23-2FF0C1BEF316}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F947F20-004E-45F9-BA23-2FF0C1BEF316}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F947F20-004E-45F9-BA23-2FF0C1BEF316}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F947F20-004E-45F9-BA23-2FF0C1BEF316}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F947F20-004E-45F9-BA23-2FF0C1BEF316}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6643805-0A16-4B8C-B33B-0B83200FADD5}
+	EndGlobalSection
+EndGlobal
