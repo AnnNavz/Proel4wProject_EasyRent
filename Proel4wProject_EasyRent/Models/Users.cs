@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Proel4wProject_EasyRent.Models
 {
@@ -32,6 +33,13 @@ namespace Proel4wProject_EasyRent.Models
         [Display(Name = "Confirm New Password")]
         [Compare("Password", ErrorMessage = "The passwords do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        [Display(Name = "Role")]
+        public int RoleId { get; set; }
+
+        [ForeignKey("RoleId")]
+        public Role? Role { get; set; }
 
     }
 }

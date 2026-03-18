@@ -15,5 +15,6 @@ namespace Proel4wProject_EasyRent.Data
         }
 
         public DbSet<Proel4wProject_EasyRent.Models.Users> Users { get; set; } = default!;
+        public DbSet<Proel4wProject_EasyRent.Models.Role> Role { get; set; } = default!;
     }
 }

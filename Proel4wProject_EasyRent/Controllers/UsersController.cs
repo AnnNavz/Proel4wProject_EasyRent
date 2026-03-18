@@ -47,6 +47,7 @@ namespace Proel4wProject_EasyRent.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
+            ViewData["UserRole"] = new SelectList(_context.Role, "RoleId", "UserRole");
             return View();
         }
 
@@ -55,14 +56,19 @@ namespace Proel4wProject_EasyRent.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,UserFirstName,UserLastName,UserEmail,Password,ConfirmPassword")] Users users)
+        public async Task<IActionResult> Create([Bind("UserId,UserFirstName,UserLastName,UserEmail,Password,ConfirmPassword,RoleId")] Users users)
         {
+            string HashPassword = HashingServices.HashData(users.Password);
+            users.Password = HashPassword;
+            users.ConfirmPassword = HashPassword;
+
             if (ModelState.IsValid)
             {
                 _context.Add(users);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UserRole"] = new SelectList(_context.Role, "RoleId", "UserRole", users.RoleId);
             return View(users);
         }
 
@@ -79,6 +85,7 @@ namespace Proel4wProject_EasyRent.Controllers
             {
                 return NotFound();
             }
+            ViewData["UserRole"] = new SelectList(_context.Role, "RoleId", "UserRole", users.RoleId);
             return View(users);
         }
 
@@ -87,7 +94,7 @@ namespace Proel4wProject_EasyRent.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserFirstName,UserLastName,UserEmail,Password,ConfirmPassword")] Users users)
+        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserFirstName,UserLastName,UserEmail,Password,ConfirmPassword,RoleId")] Users users)
         {
             string HashPassword = HashingServices.HashData(users.Password);
             users.Password = HashPassword;
@@ -98,6 +105,7 @@ namespace Proel4wProject_EasyRent.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(users);
         }
 
