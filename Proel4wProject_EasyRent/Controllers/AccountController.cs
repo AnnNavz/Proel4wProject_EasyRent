@@ -15,7 +15,7 @@ namespace Proel4wProject_EasyRent.Controllers
             _context = context;
         }
 
-        public IActionResult Login()
+        public IActionResult LoginView()
         {
             return View();
         }

@@ -1,0 +1,40 @@
+﻿@model LoginViewModel
+@{
+    Layout = "_LoginLayout";
+    ViewData["Title"] = "Login";
+}
+
+<div class="login-header">
+    <h2>EasyRent</h2>
+    <p>Please enter your details to sign in</p>
+</div>
+
+<form asp-action="Login" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label small fw-bold"></label>
+        <input asp-for="Email" class="form-control" placeholder="name@company.com" />
+        <span asp-validation-for="Email" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-3">
+        <div class="d-flex justify-content-between">
+            <label asp-for="Password" class="form-label small fw-bold"></label>
+            <a href="#" class="forgot-pass">Forgot password?</a>
+        </div>
+        <input asp-for="Password" class="form-control" type="password" placeholder="••••••••" />
+        <span asp-validation-for="Password" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-4 form-check">
+        <input asp-for="RememberMe" class="form-check-input" />
+        <label asp-for="RememberMe" class="form-check-label small"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Sign in</button>
+
+    <div class="register-link">
+        Don't have an account? <a href="#" class="fw-bold text-primary text-decoration-none">Create an account</a>
+    </div>
+</form>
