@@ -26,19 +26,27 @@ namespace Proel4wProject_EasyRent.Controllers
         {
             if (ModelState.IsValid)
             {
-                // 1. Hash the incoming password using your HashingService
                 string hashedInput = HashingServices.HashData(model.Password);
 
-                // 2. Check database for a user with this email and hashed password
+                // Include the Role navigation property if you need to check Role Name, 
+                // otherwise checking RoleId directly is faster.
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.UserEmail == model.Email && u.Password == hashedInput);
 
                 if (user != null)
                 {
-                    // Logic for signing in (e.g., setting a Cookie or Session)
-                    // HttpContext.Session.SetString("UserName", user.UserFirstName);
+                    // Optional: Store user info in Session
+                    HttpContext.Session.SetInt32("UserId", user.UserId);
+                    HttpContext.Session.SetInt32("UserRole", user.RoleId);
 
-                    return RedirectToAction("Index", "Home");
+                    // Redirect based on RoleId
+                    return user.RoleId switch
+                    {
+                        1 => RedirectToAction("Index", "Users"),
+                        2 => RedirectToAction("Index", "Home"),
+                        3 => RedirectToAction("Index", "Home"),
+                        _ => RedirectToAction("Index", "Home") // Default fallback
+                    };
                 }
 
                 ModelState.AddModelError("", "Invalid login attempt.");
