@@ -146,133 +146,512 @@
             padding: 25px;
             height: 100%;
         }
+
+        /*Second section*/
+
+        #easyrent-homepage .vehicle-section {
+            padding: 80px 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #fff;
+        }
+
+        #easyrent-homepage .category-badge {
+            background: #468585;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        #easyrent-homepage .section-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: #1E4D57;
+            font-weight: 800;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+
+        /* THE CARD FIX: Using Flexbox to ensure side-by-side cards are the same height */
+        #easyrent-homepage .vehicle-card {
+            border: 1px solid #EAEAEA;
+            border-radius: 24px;
+            background: white;
+            transition: all 0.3s ease;
+            height: 100%; /* Important: Forces both cards to match height */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #easyrent-homepage .image-wrapper {
+            position: relative;
+            padding: 12px;
+        }
+
+        /* THE IMAGE FIX: Forces even dimensions without stretching */
+        #easyrent-homepage .main-vehicle-img {
+            width: 100%;
+            height: 280px;
+            border-radius: 20px;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* Elements inside the image */
+        #easyrent-homepage .wish-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        #easyrent-homepage .price-tag-badge {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            background: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            z-index: 10;
+        }
+
+            #easyrent-homepage .price-tag-badge span {
+                font-size: 0.65rem;
+                color: #888;
+                display: block;
+            }
+
+            #easyrent-homepage .price-tag-badge b {
+                font-size: 0.95rem;
+                color: #111;
+                font-weight: 700;
+            }
+
+        /* Card Content Area */
+        #easyrent-homepage .card-info {
+            padding: 0 24px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* This pushes the button to the bottom */
+        }
+
+        #easyrent-homepage .v-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #111;
+        }
+
+        #easyrent-homepage .avail-label {
+            color: #468585;
+            background: #F0F7F7;
+            border: 1px solid #D6E8E8;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        #easyrent-homepage .feature-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        #easyrent-homepage .feature-item {
+            font-size: 0.85rem;
+            color: #444;
+            display: flex;
+            align-items: center;
+        }
+
+            #easyrent-homepage .feature-item::before {
+                content: "•";
+                margin-right: 10px;
+                font-weight: bold;
+                color: #468585;
+            }
+
+        #easyrent-homepage .btn-action {
+            background: #1E4D57;
+            color: white;
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: auto; /* Aligns buttons perfectly at the bottom */
+            transition: background 0.3s;
+        }
+
+            #easyrent-homepage .btn-action:hover {
+                background: #2d8191;
+            }
+
+        /* Trust and Ease Section */
+        #easyrent-homepage .trust-ease-section {
+            padding: 80px 0;
+            background-color: #fff;
+        }
+
+        #easyrent-homepage .trust-badge {
+            background: #468585;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+
+        #easyrent-homepage .benefit-card {
+            background: #ffffff;
+            border: 1px solid #EAEAEA;
+            border-radius: 24px;
+            padding: 40px 30px;
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            #easyrent-homepage .benefit-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            }
+
+        #easyrent-homepage .icon-box {
+            width: 60px;
+            height: 60px;
+            background: #468585;
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        #easyrent-homepage .benefit-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #111;
+            margin-bottom: 12px;
+        }
+
+        #easyrent-homepage .desc-text {
+            font-size: 0.95rem;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        #easyrent-homepage .benefit-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            #easyrent-homepage .benefit-list li {
+                font-size: 0.88rem;
+                color: #555;
+                position: relative;
+                padding-left: 20px;
+                margin-bottom: 8px;
+            }
+
+                #easyrent-homepage .benefit-list li::before {
+                    content: "•";
+                    position: absolute;
+                    left: 0;
+                    color: #468585;
+                    font-weight: bold;
+                }
+
+    /*Call to Action section*/
+   
 </style>
 
+<!--Hero section-->
+    <div id="easyrent-homepage">
+        <section class="hero-container">
+            <div class="container">
+                <div class="badge-pill">
+                    🥇 Cebu's #1 Top Rated Vehicle Rental
+                </div>
+
+                <h1 class="hero-title">Your Trusted Partner<br>On The Road</h1>
+
+                <p class="hero-subtitle">
+                    Wherever life takes you, we're there to ensure you arrive in style. Enjoy transparent
+                    pricing, flexible pickup locations, and the peace of mind that comes with a
+                    5-star rated fleet you can count on.
+                </p>
+
+                <div class="glass-search-box">
+                    <div class="row g-3 align-items-end text-start">
+                        <div class="col-lg-3 col-md-6">
+                            <div class="input-group-label"><i class="bi bi-geo-alt"></i> Pickup Location</div>
+                            <input type="text" class="form-control custom-input" placeholder="Enter your address">
+                        </div>
+
+                        <div class="col-lg-2 col-md-6">
+                            <div class="input-group-label"><i class="bi bi-calendar3"></i> Pickup Date</div>
+                            <input type="date" class="form-control custom-input">
+                        </div>
+
+                        <div class="col-lg-2 col-md-6">
+                            <div class="input-group-label"><i class="bi bi-clock"></i> Pickup Time</div>
+                            <select class="form-select custom-input">
+                                <option selected>Select the time</option>
+                                <option>12:00 AM</option>
+                                <option>01:00 AM</option>
+                                <option>02:00 AM</option>
+                                <option>03:00 AM</option>
+                                <option>04:00 AM</option>
+                                <option>05:00 AM</option>
+                                <option>06:00 AM</option>
+                                <option>07:00 AM</option>
+                                <option>08:00 AM</option>
+                                <option>09:00 AM</option>
+                                <option>10:00 AM</option>
+                                <option>11:00 AM</option>
+                                <option>12:00 PM</option>
+                                <option>01:00 PM</option>
+                                <option>02:00 PM</option>
+                                <option>03:00 PM</option>
+                                <option>04:00 PM</option>
+                                <option>05:00 PM</option>
+                                <option>06:00 PM</option>
+                                <option>07:00 PM</option>
+                                <option>08:00 PM</option>
+                                <option>09:00 PM</option>
+                                <option>10:00 PM</option>
+                                <option>11:00 PM</option>
+                            </select>
+                        </div>
+
+                        <div class="col-lg-2 col-md-6">
+                            <div class="input-group-label"><i class="bi bi-calendar-check"></i> Return Date</div>
+                            <input type="date" class="form-control custom-input">
+                        </div>
+
+                        <div class="col-lg-3 col-md-12">
+                            <button class="btn btn-search">Search Vehicle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+   
+  <!--Vehicle Categories section-->
 <div id="easyrent-homepage">
-    <section class="hero-container">
-        <div class="container">
-            <div class="badge-pill">
-                🥇 Cebu's #1 Top Rated Vehicle Rental
-            </div>
-
-            <h1 class="hero-title">Your Trusted Partner<br>On The Road</h1>
-
-            <p class="hero-subtitle">
-                Wherever life takes you, we're there to ensure you arrive in style. Enjoy transparent
-                pricing, flexible pickup locations, and the peace of mind that comes with a
-                5-star rated fleet you can count on.
-            </p>
-
-            <div class="glass-search-box">
-                <div class="row g-3 align-items-end text-start">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="input-group-label"><i class="bi bi-geo-alt"></i> Pickup Location</div>
-                        <input type="text" class="form-control custom-input" placeholder="Enter your address">
-                    </div>
-
-                    <div class="col-lg-2 col-md-6">
-                        <div class="input-group-label"><i class="bi bi-calendar3"></i> Pickup Date</div>
-                        <input type="date" class="form-control custom-input">
-                    </div>
-
-                    <div class="col-lg-2 col-md-6">
-                        <div class="input-group-label"><i class="bi bi-clock"></i> Pickup Time</div>
-                        <select class="form-select custom-input">
-                            <option selected>Select the time</option>
-                            <option>12:00 AM</option>
-                            <option>01:00 AM</option>
-                            <option>02:00 AM</option>
-                            <option>03:00 AM</option>
-                            <option>04:00 AM</option>
-                            <option>05:00 AM</option>
-                            <option>06:00 AM</option>
-                            <option>07:00 AM</option>
-                            <option>08:00 AM</option>
-                            <option>09:00 AM</option>
-                            <option>10:00 AM</option>
-                            <option>11:00 AM</option>
-                            <option>12:00 PM</option>
-                            <option>01:00 PM</option>
-                            <option>02:00 PM</option>
-                            <option>03:00 PM</option>
-                            <option>04:00 PM</option>
-                            <option>05:00 PM</option>
-                            <option>06:00 PM</option>
-                            <option>07:00 PM</option>
-                            <option>08:00 PM</option>
-                            <option>09:00 PM</option>
-                            <option>10:00 PM</option>
-                            <option>11:00 PM</option>
-                        </select>
-                    </div>
-
-                    <div class="col-lg-2 col-md-6">
-                        <div class="input-group-label"><i class="bi bi-calendar-check"></i> Return Date</div>
-                        <input type="date" class="form-control custom-input">
-                    </div>
-
-                    <div class="col-lg-3 col-md-12">
-                        <button class="btn btn-search">Search Vehicle</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-5 bg-white">
+    <section class="vehicle-section">
         <div class="container text-center">
-            <h2 class="section-title">Find Your Perfect Vehicle Types</h2>
-            <p class="text-muted mb-5">Choose from our wide range of maintained vehicles to find the one that fits your journey.</p>
-
-            <div class="row g-4">
-                <div class="col-md-6 text-start">
-                    <div class="vehicle-card p-4">
-                        <img src="/images/suv-preview.png" class="img-fluid rounded mb-3" alt="SUV">
-                        <div class="price-tag">₱3,500 per 12 hours</div>
-                        <h5 class="fw-bold">Sports Utility Vehicle (SUV)</h5>
-                        <p class="text-muted small">Mitsubishi Montero Sport or similar</p>
-                        <button class="btn btn-outline-dark btn-sm float-end">Details</button>
-                    </div>
+            <div class="section-header mb-5">
+                <div class="category-badge mx-auto">
+                    <i class="bi bi-truck"></i> Vehicle Categories
                 </div>
-                <div class="col-md-6 text-start">
-                    <div class="vehicle-card p-4">
-                        <img src="/images/van-preview.png" class="img-fluid rounded mb-3" alt="Van">
-                        <div class="price-tag">₱5,000 per 24 hours</div>
-                        <h5 class="fw-bold">Passenger VAN</h5>
-                        <p class="text-muted small">Nissan NV350 or similar</p>
-                        <button class="btn btn-outline-dark btn-sm float-end">Details</button>
-                    </div>
-                </div>
+                <h2>Find Your Perfect Vehicle Types</h2>
+                <p class="text-muted small mx-auto" style="max-width: 650px;">
+                    Choose from our premium SUVs and spacious vans to find the perfect fit for your next trip.
+                    Discover a reliable fleet designed to handle any journey or occasion with ease.
+                </p>
             </div>
-        </div>
-    </section>
 
-    <section class="py-5 bg-light">
-        <div class="container text-center">
-            <h2 class="section-title mb-5">Why choose EasyRent?</h2>
-            <div class="row g-4 text-start">
-                <div class="col-md-4">
-                    <div class="benefit-box shadow-sm">
-                        <i class="bi bi-clock-history mb-3 d-block text-primary fs-3"></i>
-                        <h6 class="fw-bold">24/7 Availability</h6>
-                        <p class="small text-muted">Book your vehicle anytime. Our system and support are available around the clock.</p>
+            <div class="row g-4 text-start d-flex align-items-stretch">
+                <div class="col-lg-6">
+                    <div class="vehicle-card">
+                        <div class="image-wrapper">
+                            <img src="/images/suv-preview.png" class="main-vehicle-img" alt="SUV">
+                            <button class="wish-btn"><i class="bi bi-star"></i></button>
+                            <div class="price-tag-badge">
+                                <span>Starting From</span>
+                                <b>₱5,000 per 3 hours</b>
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h5 class="v-name mb-0">Sport Utility Vehicle (SUV)</h5>
+                                <span class="avail-label">+4 available</span>
+                            </div>
+                            <p class="text-primary small mb-3" style="color: #468585 !important;">Driver-assisted experience</p>
+                            <p class="text-secondary small mb-4">Conquer any road with our premium SUVs, built for power, comfort, and ultimate versatility.</p>
+
+                            <div class="fw-bold small mb-2">Benefits:</div>
+                            <div class="feature-grid">
+                                <div class="feature-item">Fully Air-Conditioned</div>
+                                <div class="feature-item">Ample Luggage Space</div>
+                                <div class="feature-item">7 seats capacity</div>
+                                <div class="feature-item">Advanced Safety</div>
+                                <div class="feature-item">Gasoline given</div>
+                            </div>
+
+                            <button class="btn-action">Browse More <i class="bi bi-arrow-right"></i></button>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="benefit-box shadow-sm">
-                        <i class="bi bi-shield-check mb-3 d-block text-primary fs-3"></i>
-                        <h6 class="fw-bold">Clear Transparency</h6>
-                        <p class="small text-muted">No hidden fees. We provide detailed pricing so you know exactly what you're paying for.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="benefit-box shadow-sm">
-                        <i class="bi bi-geo-alt mb-3 d-block text-primary fs-3"></i>
-                        <h6 class="fw-bold">Multiple Locations</h6>
-                        <p class="small text-muted">Pick up and drop off your rental at various convenient spots across the region.</p>
+
+                <div class="col-lg-6">
+                    <div class="vehicle-card">
+                        <div class="image-wrapper">
+                            <img src="/images/van-preview.png" class="main-vehicle-img" alt="VAN">
+                            <button class="wish-btn"><i class="bi bi-star"></i></button>
+                            <div class="price-tag-badge">
+                                <span>Starting From</span>
+                                <b>₱5,000 per 3 hours</b>
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h5 class="v-name mb-0">Mitsubishi VAN</h5>
+                                <span class="avail-label">+3 available</span>
+                            </div>
+                            <p class="text-primary small mb-3" style="color: #468585 !important;">Driver-assisted experience</p>
+                            <p class="text-secondary small mb-4">A spacious and reliable option for group travels, ensuring everyone rides in comfort and style.</p>
+
+                            <div class="fw-bold small mb-2">Benefits:</div>
+                            <div class="feature-grid">
+                                <div class="feature-item">Dual Air-Conditioning</div>
+                                <div class="feature-item">Extra Large Cargo Space</div>
+                                <div class="feature-item">8 to 18 seats capacity</div>
+                                <div class="feature-item">Advanced Safety</div>
+                                <div class="feature-item">Gasoline given</div>
+                            </div>
+
+                            <button class="btn-action">Browse More <i class="bi bi-arrow-right"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 </div>
+
+<!--Trust and Ease section-->
+
+<div id="easyrent-homepage">
+    <section class="trust-ease-section">
+        <div class="container text-center">
+            <div class="section-header mb-5">
+                <div class="trust-badge mx-auto">
+                    <i class="bi bi-bus-front"></i> Trust and Ease
+                </div>
+                <h2>Why choose EasyRent?</h2>
+                <p class="text-muted small mx-auto" style="max-width: 700px;">
+                    Experience seamless bookings and premium comfort. Whether it's a family adventure
+                    in a rugged SUV or a group trip in a spacious van, we provide well-maintained
+                    vehicles and reliable service for every destination.
+                </p>
+            </div>
+
+            <div class="row g-4 text-start">
+                <div class="col-lg-4 col-md-6">
+                    <div class="benefit-card">
+                        <div class="icon-box"><i class="bi bi-clock"></i></div>
+                        <h4>24/7 Availability</h4>
+                        <p class="desc-text">Reserve your desired vehicles at 24/7.</p>
+                        <ul class="benefit-list">
+                            <li>Round-the-clock</li>
+                            <li>Flex schedules</li>
+                            <li>After hours support</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="benefit-card">
+                        <div class="icon-box"><i class="bi bi-cash-stack"></i></div>
+                        <h4>Price Transparency</h4>
+                        <p class="desc-text">Simple, flat-rate pricing with no hidden fees.</p>
+                        <ul class="benefit-list">
+                            <li>Flat hourly rate</li>
+                            <li>No hidden fees</li>
+                            <li>Clear booking breakdown</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="benefit-card">
+                        <div class="icon-box"><i class="bi bi-geo-alt"></i></div>
+                        <h4>Multiple Locations Around Region 7</h4>
+                        <p class="desc-text">Pick up and drop off at your convenience.</p>
+                        <ul class="benefit-list">
+                            <li>Airport Terminals and Pier Terminals</li>
+                            <li>Beaches and Tourists</li>
+                            <li>Companies and businesses</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="benefit-card">
+                        <div class="icon-box"><i class="bi bi-shield-lock"></i></div>
+                        <h4>Secure Bookings</h4>
+                        <p class="desc-text">Safe is our priority. Travel with confidence.</p>
+                        <ul class="benefit-list">
+                            <li>Secure Payments</li>
+                            <li>Data Privacy</li>
+                            <li>Verified Payments</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="benefit-card">
+                        <div class="icon-box"><i class="bi bi-people"></i></div>
+                        <h4>Reliable Fleet</h4>
+                        <p class="desc-text">Discover our SUV and vans</p>
+                        <ul class="benefit-list">
+                            <li>Well maintained</li>
+                            <li>Clean and insured</li>
+                            <li>Modern Vehicles</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="benefit-card">
+                        <div class="icon-box"><i class="bi bi-buildings"></i></div>
+                        <h4>Great for Groups</h4>
+                        <p class="desc-text">Spacious vans for your all travel needs.</p>
+                        <ul class="benefit-list">
+                            <li>Comfort and Space</li>
+                            <li>Group Travel</li>
+                            <li>Family Outings</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+<!--Call to Action section-->
