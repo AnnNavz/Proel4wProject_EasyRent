@@ -2,7 +2,277 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+
+    #easyrent-homepage {
+        --primary-teal: #2D8191;
+        --dark-teal: #1E4D57;
+        --glass-bg: rgba(255, 255, 255, 0.15);
+        --glass-border: rgba(255, 255, 255, 0.2);
+    }
+
+        /* Hero Section */
+        #easyrent-homepage .hero-container {
+            position: relative;
+            min-height: 650px;
+            background-image: linear-gradient(rgba(45, 129, 145, 0.75), rgba(45, 129, 145, 0.75)), url('/images/hero-bg.png'); /* Updated to .png as per your fix */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            padding: 80px 0;
+            color: white;
+            text-align: center;
+        }
+
+        #easyrent-homepage .badge-pill {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        #easyrent-homepage .hero-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        #easyrent-homepage .hero-subtitle {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Glassmorphism Search Box */
+        #easyrent-homepage .glass-search-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        #easyrent-homepage .input-group-label {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+            #easyrent-homepage .input-group-label i {
+                margin-right: 8px;
+                font-size: 1.1rem;
+            }
+
+        #easyrent-homepage .custom-input {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: white !important;
+            border-radius: 12px;
+            padding: 12px;
+            height: 45px;
+        }
+
+            /* FIX: Visibility for Dropdown Options */
+            #easyrent-homepage .custom-input option {
+                background-color: white !important;
+                color: #333 !important;
+            }
+
+            #easyrent-homepage .custom-input::placeholder {
+                color: rgba(255, 255, 255, 0.6);
+            }
+
+        #easyrent-homepage .btn-search {
+            background-color: var(--dark-teal);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0 20px;
+            font-weight: 700;
+            height: 55px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+            #easyrent-homepage .btn-search:hover {
+                background-color: #163a42;
+            }
+
+        #easyrent-homepage .custom-input::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        /* Content Sections */
+        #easyrent-homepage .section-title {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--dark-teal);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        #easyrent-homepage .vehicle-card {
+            border: 1px solid #eee;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #fff;
+            transition: 0.3s;
+        }
+
+        #easyrent-homepage .price-tag {
+            background: var(--primary-teal);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        #easyrent-homepage .benefit-box {
+            background: white;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 25px;
+            height: 100%;
+        }
+</style>
+
+<div id="easyrent-homepage">
+    <section class="hero-container">
+        <div class="container">
+            <div class="badge-pill">
+                🥇 Cebu's #1 Top Rated Vehicle Rental
+            </div>
+
+            <h1 class="hero-title">Your Trusted Partner<br>On The Road</h1>
+
+            <p class="hero-subtitle">
+                Wherever life takes you, we're there to ensure you arrive in style. Enjoy transparent
+                pricing, flexible pickup locations, and the peace of mind that comes with a
+                5-star rated fleet you can count on.
+            </p>
+
+            <div class="glass-search-box">
+                <div class="row g-3 align-items-end text-start">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="input-group-label"><i class="bi bi-geo-alt"></i> Pickup Location</div>
+                        <input type="text" class="form-control custom-input" placeholder="Enter your address">
+                    </div>
+
+                    <div class="col-lg-2 col-md-6">
+                        <div class="input-group-label"><i class="bi bi-calendar3"></i> Pickup Date</div>
+                        <input type="date" class="form-control custom-input">
+                    </div>
+
+                    <div class="col-lg-2 col-md-6">
+                        <div class="input-group-label"><i class="bi bi-clock"></i> Pickup Time</div>
+                        <select class="form-select custom-input">
+                            <option selected>Select the time</option>
+                            <option>12:00 AM</option>
+                            <option>01:00 AM</option>
+                            <option>02:00 AM</option>
+                            <option>03:00 AM</option>
+                            <option>04:00 AM</option>
+                            <option>05:00 AM</option>
+                            <option>06:00 AM</option>
+                            <option>07:00 AM</option>
+                            <option>08:00 AM</option>
+                            <option>09:00 AM</option>
+                            <option>10:00 AM</option>
+                            <option>11:00 AM</option>
+                            <option>12:00 PM</option>
+                            <option>01:00 PM</option>
+                            <option>02:00 PM</option>
+                            <option>03:00 PM</option>
+                            <option>04:00 PM</option>
+                            <option>05:00 PM</option>
+                            <option>06:00 PM</option>
+                            <option>07:00 PM</option>
+                            <option>08:00 PM</option>
+                            <option>09:00 PM</option>
+                            <option>10:00 PM</option>
+                            <option>11:00 PM</option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-2 col-md-6">
+                        <div class="input-group-label"><i class="bi bi-calendar-check"></i> Return Date</div>
+                        <input type="date" class="form-control custom-input">
+                    </div>
+
+                    <div class="col-lg-3 col-md-12">
+                        <button class="btn btn-search">Search Vehicle</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-white">
+        <div class="container text-center">
+            <h2 class="section-title">Find Your Perfect Vehicle Types</h2>
+            <p class="text-muted mb-5">Choose from our wide range of maintained vehicles to find the one that fits your journey.</p>
+
+            <div class="row g-4">
+                <div class="col-md-6 text-start">
+                    <div class="vehicle-card p-4">
+                        <img src="/images/suv-preview.png" class="img-fluid rounded mb-3" alt="SUV">
+                        <div class="price-tag">₱3,500 per 12 hours</div>
+                        <h5 class="fw-bold">Sports Utility Vehicle (SUV)</h5>
+                        <p class="text-muted small">Mitsubishi Montero Sport or similar</p>
+                        <button class="btn btn-outline-dark btn-sm float-end">Details</button>
+                    </div>
+                </div>
+                <div class="col-md-6 text-start">
+                    <div class="vehicle-card p-4">
+                        <img src="/images/van-preview.png" class="img-fluid rounded mb-3" alt="Van">
+                        <div class="price-tag">₱5,000 per 24 hours</div>
+                        <h5 class="fw-bold">Passenger VAN</h5>
+                        <p class="text-muted small">Nissan NV350 or similar</p>
+                        <button class="btn btn-outline-dark btn-sm float-end">Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light">
+        <div class="container text-center">
+            <h2 class="section-title mb-5">Why choose EasyRent?</h2>
+            <div class="row g-4 text-start">
+                <div class="col-md-4">
+                    <div class="benefit-box shadow-sm">
+                        <i class="bi bi-clock-history mb-3 d-block text-primary fs-3"></i>
+                        <h6 class="fw-bold">24/7 Availability</h6>
+                        <p class="small text-muted">Book your vehicle anytime. Our system and support are available around the clock.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="benefit-box shadow-sm">
+                        <i class="bi bi-shield-check mb-3 d-block text-primary fs-3"></i>
+                        <h6 class="fw-bold">Clear Transparency</h6>
+                        <p class="small text-muted">No hidden fees. We provide detailed pricing so you know exactly what you're paying for.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="benefit-box shadow-sm">
+                        <i class="bi bi-geo-alt mb-3 d-block text-primary fs-3"></i>
+                        <h6 class="fw-bold">Multiple Locations</h6>
+                        <p class="small text-muted">Pick up and drop off your rental at various convenient spots across the region.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
