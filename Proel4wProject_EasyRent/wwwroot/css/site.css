@@ -18,7 +18,7 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin-bottom: 0px;
 }
 
 @tailwind base;
@@ -147,14 +147,14 @@ body {
     }
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for call to action*/
 @media (max-width: 1200px) {
     #easyrent-homepage .cta-heading {
         font-size: 3rem;
     }
 }
 
-/* Responsive Breakpoints */
+/* Responsive Breakpoints for call to action*/
 @media (max-width: 1200px) {
     #cta-section-wrapper .cta-content h1 {
         font-size: 3rem;
@@ -165,3 +165,28 @@ body {
         height: 200px;
     }
 }
+
+/* Responsive Breakpoints for How it Works*/
+@media (max-width: 992px) {
+    #easyrent-how-it-works-wrapper .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+
+    #easyrent-how-it-works-wrapper .section-header h2 {
+        font-size: 2.2rem;
+    }
+}
+
+/*tailored business packages section*/
+@media (max-width: 992px) {
+    #easyrent-business-packages-wrapper .packages-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    #easyrent-business-packages-wrapper .package-card.featured {
+        transform: scale(1);
+    }
+}
+

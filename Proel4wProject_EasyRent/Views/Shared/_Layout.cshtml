@@ -7,41 +7,359 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Montserrat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/Proel4wProject_EasyRent.styles.css" asp-append-version="true" />
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        #easyrent-site-footer {
+            background-color: #2D8191;
+            color: #ffffff;
+            padding: 60px 0 20px;
+            width: 100%;
+            margin-top: auto;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        /*HEADER*/
+        #easyrent-navbar {
+            background: #ffffff;
+            padding: 10px 0; /* Tighter padding */
+            border-bottom: 1px solid #f0f0f0;
+            width: 100%;
+            /* STICKY/FIXED HEADER */
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* Add margin to body so content doesn't hide under the fixed header */
+        body {
+            margin-top: 80px;
+        }
+
+        #easyrent-navbar .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+        }
+
+        /* --- BRAND SECTION --- */
+        #easyrent-navbar .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0; /* Removing gap to use manual margin for precision */
+        }
+
+        #easyrent-navbar .nav-logo-img {
+            height: 40px; /* Enlarged logo as requested */
+            width: auto;
+            display: block;
+            margin-right: -2px; /* Pulls text closer to the icon */
+        }
+
+        #easyrent-navbar .brand-text-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 8px; /* Moves EasyRent and tagline further to the left */
+        }
+
+        #easyrent-navbar .brand-main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1A1A1A; /* Color for "Easy" */
+            margin: 0;
+            line-height: 0.8;
+            letter-spacing: -1px;
+        }
+
+            #easyrent-navbar .brand-main-title .color-rent {
+                color: #20515D; /* New requested color for "Rent" */
+            }
+
+        #easyrent-navbar .brand-sub-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #888888;
+            margin: 0;
+            line-height: 1;
+            margin-top: 2px;
+        }
+
+        /* --- NAV LINKS --- */
+        #easyrent-navbar .nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        #easyrent-navbar .nav-item {
+            text-decoration: none;
+            color: #1a1a1a;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px; /* Scaled down to professional standard */
+            font-weight: 500;
+            padding: 8px 18px;
+            transition: 0.3s;
+        }
+
+            #easyrent-navbar .nav-item.active {
+                background: #F5F5F5;
+                border-radius: 20px;
+            }
+
+        /* --- ACTIONS --- */
+        #easyrent-navbar .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #easyrent-navbar .phone-pill {
+            background: #F0F7F8;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px; /* Scaled down */
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #easyrent-navbar .phone-icon {
+            color: #2D8191;
+            font-size: 13px;
+        }
+
+        #easyrent-navbar .btn-signin {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            padding: 8px 18px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px; /* Scaled down */
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #easyrent-navbar .btn-book {
+            background: #2D8191;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 22px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px; /* Scaled down */
+            font-weight: 500;
+            cursor: pointer;
+        }   
+
+        /*FOOTER*/
+
+            /* 1. ENSURE BRAND SECTION ALIGNS TO THE ABSOLUTE LEFT */
+            #easyrent-site-footer .brand-section {
+                flex: 0 1 550px;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start; /* Forces logo and text to line up at the left edge */
+                padding: 0;
+                margin: 0;
+            }
+
+            /* 2. LOGO ALIGNMENT & SIZE */
+            #easyrent-site-footer .footer-logo-large {
+                width: 70px;
+                height: auto;
+                /* Use a negative margin to pull the logo left to account for image transparency */
+                margin-left: -10px;
+                margin-bottom: 25px;
+                display: block;
+            }
+
+            /* 3. PARAGRAPH ALIGNMENT */
+            #easyrent-site-footer .footer-description {
+                font-size: 1.1rem;
+                line-height: 1.6;
+                opacity: 0.9;
+                margin-left: 0;
+                text-align: left; /* Ensures text starts at the very left edge */
+            }
+
+            /* 4. CONTAINER WIDTH FIX (Match your previous request) */
+            #easyrent-site-footer .footer-main-container {
+                max-width: 1400px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                padding: 0 60px;
+            }
+            #easyrent-site-footer .brand-section {
+                flex: 0 1 550px; /* Keeps description wide enough */
+            }
+
+            #easyrent-site-footer .footer-description {
+                font-size: 1.1rem;
+                line-height: 1.6;
+                opacity: 0.9;
+            }
+
+            /* 5. CONTACT ALIGNMENT */
+            #easyrent-site-footer .contact-section {
+                flex: 0 0 auto;
+            }
+
+            #easyrent-site-footer .footer-contact-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+                #easyrent-site-footer .footer-contact-list li {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 15px;
+                    margin-bottom: 15px;
+                    font-size: 1rem;
+                }
+
+                #easyrent-site-footer .footer-contact-list i {
+                    font-size: 1.2rem;
+                    color: #ffffff;
+                }
+
+            /* 6. BOTTOM DIVIDER & COPYRIGHT */
+            #easyrent-site-footer .footer-bottom-area {
+                max-width: 1400px;
+                margin: 40px auto 0;
+                padding: 0 60px;
+                text-align: center;
+            }
+
+            #easyrent-site-footer .footer-divider {
+                border: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+                margin-bottom: 20px;
+            }
+
+            #easyrent-site-footer .copyright-text {
+                font-size: 0.95rem;
+                opacity: 0.8;
+                margin: 0;
+            }
+
+                #easyrent-site-footer .copyright-text a {
+                    color: #ffffff;
+                    text-decoration: underline;
+                }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Proel4wProject_EasyRent</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+    <header id="easyrent-navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="~/images/logo.png" class="nav-logo-img" alt="Logo">
+                <div class="brand-text-wrapper">
+                    <h1 class="brand-main-title">Easy<span class="color-rent">Rent</span></h1>
+                    <p class="brand-sub-title">Vehicle Rental</p>
                 </div>
             </div>
-        </nav>
+
+            <nav class="nav-links">
+                <a href="#" class="nav-item active">Home</a>
+                <a href="#" class="nav-item">Vehicles</a>
+                <a href="#" class="nav-item">Contacts</a>
+                <a href="#" class="nav-item">About Us</a>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="phone-pill">
+                    <i class="fa-solid fa-phone phone-icon"></i>
+                    <span>+639194594264</span>
+                </div>
+                <button class="btn-signin">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                </button>
+                <button class="btn-book">Book Now</button>
+            </div>
+        </div>
     </header>
+
     <div class="">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Proel4wProject_EasyRent - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer id="easyrent-site-footer">
+        <div class="footer-main-container">
+            <div class="footer-column brand-section">
+                <img src="~/images/logo.png" alt="Trust Rent A Car Logo" class="footer-logo-large" />
+                <p class="footer-description">
+                    Wherever life takes you, we’re there to ensure you arrive in style. Enjoy transparent pricing,
+                    flexible pickup locations, and the peace of mind that comes with a 5-star rated fleet you can count on.
+                </p>
+            </div>
+
+            <div class="footer-column contact-section">
+                <ul class="footer-contact-list">
+                    <li>
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span>Z5-003 Sitio Molila, Upper Mohon,<br />Talisay City, Cebu, Philippines 6045</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-telephone-fill"></i>
+                        <span>09194594264 / 09226891795</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-telephone-plus-fill"></i>
+                        <span>(032) 516-9159 / (032) 272-2043</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-facebook"></i>
+                        <span>TRUST RENT A CAR</span>
+                    </li>
+                    <li>
+                        <i class="bi bi-envelope-fill"></i>
+                        <span>trustrentacar2010@@gmail.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom-area">
+            <hr class="footer-divider" />
+            <p class="copyright-text">
+                &copy; Copyright 2026. Powered by <a href="#">GroupHug</a>
+            </p>
         </div>
     </footer>
+
+ 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
