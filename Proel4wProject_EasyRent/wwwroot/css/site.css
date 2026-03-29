@@ -146,3 +146,22 @@ body {
         transform: translateY(calc(-100% - var(--gap)));
     }
 }
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    #easyrent-homepage .cta-heading {
+        font-size: 3rem;
+    }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1200px) {
+    #cta-section-wrapper .cta-content h1 {
+        font-size: 3rem;
+        white-space: normal;
+    }
+
+    #cta-section-wrapper .vehicle-actor {
+        height: 200px;
+    }
+}

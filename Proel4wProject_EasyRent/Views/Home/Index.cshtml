@@ -390,8 +390,107 @@
                     font-weight: bold;
                 }
 
-    /*Call to Action section*/
-   
+    /* Call to Action Section */
+
+    #cta-section-wrapper .start-journey-cta {
+        position: relative;
+        width: 100%;
+        min-height: 480px;
+        background-color: #2D8191;
+        border-radius: 20px; /* Radius set to 20 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 80px 0;
+        overflow: hidden;
+    }
+
+    /* THE GRAY CIRCLES: Forced to be perfect circles and compressed inward */
+    #cta-section-wrapper .bg-circle {
+        position: absolute;
+        top: 50%;
+        width: 650px;
+        height: 650px;
+        background-color: #7A7A7A;
+        border-radius: 50%;
+        z-index: 1;
+        transform: translateY(-50%);
+    }
+
+    #cta-section-wrapper .circle-left {
+        left: -325px;
+    }
+
+    #cta-section-wrapper .circle-right {
+        right: -325px;
+    }
+
+    /* VEHICLES: Symmetrical height and balanced placement */
+    #cta-section-wrapper .vehicle-actor {
+        position: absolute;
+        height: 300px; /* Symmetrical Height */
+        width: auto;
+        z-index: 5;
+        object-fit: contain;
+    }
+
+    #cta-section-wrapper .van-left {
+        left: 5%;
+        bottom: 0;
+        margin-bottom: 25px; /* Lifts van up to align with SUV */
+    }
+
+    #cta-section-wrapper .suv-right {
+        right: 2%; /* THE FIX: Moved further right to create whitespace */
+        bottom: -15px; /* THE FIX: Moved slightly down to balance position */
+        margin-bottom: 0;
+    }
+
+    /* TEXT CONTENT: Centered and One Line */
+    #cta-section-wrapper .cta-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+        color: #ffffff;
+        width: 100%;
+        max-width: 900px;
+    }
+
+        #cta-section-wrapper .cta-content h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 4rem;
+            white-space: nowrap;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        #cta-section-wrapper .cta-content p {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 35px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+    #cta-section-wrapper .btn-book {
+        background-color: #1E4D57;
+        color: white;
+        border: none;
+        padding: 18px 75px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.3rem;
+        transition: 0.3s ease;
+        cursor: pointer;
+    }
+
+        #cta-section-wrapper .btn-book:hover {
+            background-color: #163a41;
+            transform: scale(1.05);
+        }   
 </style>
 
 <!--Hero section-->
@@ -655,3 +754,19 @@
 
 
 <!--Call to Action section-->
+<div id="cta-section-wrapper" style="width: 100%; overflow: hidden;">
+    <section class="start-journey-cta">
+        <div class="bg-circle circle-left"></div>
+        <div class="bg-circle circle-right"></div>
+
+        <img src="~/images/van-small.png" class="vehicle-actor van-left" alt="Van">
+        <img src="~/images/suv-small.png" class="vehicle-actor suv-right" alt="SUV">
+
+        <div class="cta-content">
+            <span style="text-transform: uppercase; letter-spacing: 3px; font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 10px;">EasyRent</span>
+            <h1>Start Your Journey Now</h1>
+            <p>Experience seamless rentals with zero hidden fees. Select your vehicle now and enjoy the ultimate driving experience.</p>
+            <button class="btn-book">Book Now</button>
+        </div>
+    </section>
+</div>
