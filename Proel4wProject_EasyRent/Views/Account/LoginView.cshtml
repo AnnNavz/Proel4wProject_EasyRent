@@ -1,4 +1,5 @@
-﻿@model LoginViewModel
+﻿@using Proel4wProject_EasyRent.Models.ViewModels
+@model LoginViewModel
 @{
     Layout = "_LoginLayout";
     ViewData["Title"] = "Login";
@@ -23,7 +24,7 @@
     <div class="mb-3">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <label asp-for="Password" class="form-label small fw-semibold text-secondary mb-0"></label>
-            <a href="#" class="text-primary text-decoration-none small fw-medium">Forgot password?</a>
+            <a asp-controller="Account" asp-action="ForgotPassword" class="text-primary text-decoration-none small fw-medium">Forgot password?</a>
         </div>
         <input asp-for="Password" class="form-control" type="password" placeholder="••••••••" required />
         <span asp-validation-for="Password" class="text-danger small"></span>

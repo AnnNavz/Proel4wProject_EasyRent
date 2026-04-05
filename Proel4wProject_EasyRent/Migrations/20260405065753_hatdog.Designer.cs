@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Proel4wProject_EasyRent.Data;
 
@@ -10,9 +11,11 @@ using Proel4wProject_EasyRent.Data;
 namespace Proel4wProject_EasyRent.Migrations
 {
     [DbContext(typeof(Proel4wProject_EasyRentContext))]
-    partial class Proel4wProject_EasyRentContextModelSnapshot : ModelSnapshot
+    [Migration("20260405065753_hatdog")]
+    partial class hatdog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -20,7 +20,71 @@ namespace Proel4wProject_EasyRent.Controllers
             return View();
         }
 
-        [HttpPost]
+		public IActionResult ForgotPassword()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var user = await _context.Users
+					.FirstOrDefaultAsync(u => u.UserEmail == model.Email);
+
+				if (user != null)
+				{
+					return RedirectToAction("ResetPassword", new { email = model.Email, token = "internal-reset" });
+				}
+
+				ModelState.AddModelError("", "Email not found in our system.");
+			}
+			return View(model);
+		}
+
+		public IActionResult ResetPassword(string email, string token)
+		{
+			if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+			{
+				return RedirectToAction("LoginView");
+			}
+
+			var model = new ResetPasswordViewModel { Email = email, Token = token };
+			return View(model);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var user = await _context.Users
+					.FirstOrDefaultAsync(u => u.UserEmail == model.Email);
+
+				if (user != null)
+				{
+					string hashedNewPassword = HashingServices.HashData(model.NewPassword);
+
+					user.Password = hashedNewPassword;
+
+					user.ConfirmPassword = hashedNewPassword;
+
+					_context.Update(user);
+					await _context.SaveChangesAsync();
+
+					TempData["Message"] = "Your password has been reset successfully. Please log in.";
+					return RedirectToAction("LoginView");
+				}
+
+				ModelState.AddModelError("", "User not found.");
+			}
+			return View(model);
+		}
+
+		[HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -28,24 +92,23 @@ namespace Proel4wProject_EasyRent.Controllers
             {
                 string hashedInput = HashingServices.HashData(model.Password);
 
-                // Include the Role navigation property if you need to check Role Name, 
-                // otherwise checking RoleId directly is faster.
+               
                 var user = await _context.Users
                     .FirstOrDefaultAsync(u => u.UserEmail == model.Email && u.Password == hashedInput);
 
                 if (user != null)
                 {
-                    // Optional: Store user info in Session
+                    
                     HttpContext.Session.SetInt32("UserId", user.UserId);
                     HttpContext.Session.SetInt32("UserRole", user.RoleId);
 
-                    // Redirect based on RoleId
+                    
                     return user.RoleId switch
                     {
-                        1 => RedirectToAction("Index", "Users"),
+                        1 => RedirectToAction("Dashboard", "Admin"),
                         2 => RedirectToAction("Index", "Home"),
                         3 => RedirectToAction("Index", "Home"),
-                        _ => RedirectToAction("Index", "Home") // Default fallback
+                        _ => RedirectToAction("Index", "Home")
                     };
                 }
 

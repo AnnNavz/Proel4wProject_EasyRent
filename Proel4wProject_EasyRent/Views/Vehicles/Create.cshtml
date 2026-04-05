@@ -1,0 +1,64 @@
+﻿@model Proel4wProject_EasyRent.Models.ViewModels.VehicleCreateViewModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Vehicle</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Vehicle.ModelName" class="control-label"></label>
+                <input asp-for="Vehicle.ModelName" class="form-control" />
+                <span asp-validation-for="Vehicle.ModelName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Vehicle.StartingPrice" class="control-label"></label>
+                <input asp-for="Vehicle.StartingPrice" class="form-control" />
+                <span asp-validation-for="Vehicle.StartingPrice" class="text-danger"></span>
+            </div>
+            <h4>Vehicle Benefits</h4>
+            <div id="benefit-container">
+                @for (int i = 0; i < Model.BenefitDescriptions.Count; i++)
+                {
+                    <div class="benefit-row mb-2">
+                        <input name="BenefitDescriptions[@i]" class="form-control" placeholder="Add a benefit..." />
+                    </div>
+                }
+            </div>
+
+            <button type="button" id="add-benefit-btn" class="btn btn-outline-secondary btn-sm mt-2">
+                + Add Another Benefit
+            </button>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        document.getElementById('add-benefit-btn').addEventListener('click', function () {
+            const container = document.getElementById('benefit-container');
+            const index = container.getElementsByClassName('benefit-row').length;
+
+            const div = document.createElement('div');
+            div.className = 'benefit-row mb-2';
+            div.innerHTML = `<input name="BenefitDescriptions[${index}]" class="form-control" placeholder="Add a benefit..." />`;
+
+            container.appendChild(div);
+        });
+    </script>
+}

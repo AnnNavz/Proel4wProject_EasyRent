@@ -12,5 +12,5 @@ namespace Proel4wProject_EasyRent.Models
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
-    }
+	}
 }

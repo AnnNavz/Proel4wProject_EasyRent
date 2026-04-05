@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EasyRent Admin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            /* Colors inspired by the EasyRent Main Page */
+            --easyrent-teal: #20515d; /* Dark teal from the hero gradient */
+            --easyrent-teal-light: #2f7585;
+            --easyrent-accent: #3b82f6; /* Modern blue accent */
+            --easyrent-bg: #f3f4f6; /* Soft gray background */
+            --sidebar-bg: #1e293b;
+        }
+
+        body {
+            background-color: var(--easyrent-bg);
+            font-family: 'Inter', sans-serif; /* SUV/Body font */
+            color: #1f2937;
+        }
+
+        h1, h2, h3, .brand-name {
+            font-family: 'Montserrat', sans-serif; /* Main heading font */
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background: var(--easyrent-teal); /* Thematic color */
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+
+            .sidebar .nav-link {
+                color: rgba(255,255,255,0.7);
+                font-weight: 500;
+                padding: 12px 15px;
+                border-radius: 10px;
+                transition: all 0.2s ease;
+                margin-bottom: 5px;
+            }
+
+                .sidebar .nav-link:hover, .sidebar .nav-link.active {
+                    background: rgba(255,255,255,0.1);
+                    color: white;
+                }
+
+        .main-content {
+            margin-left: 260px;
+            padding: 40px;
+        }
+
+        /* Card Styling to match the "Vehicle Types" section */
+        .admin-card {
+            border: none;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease;
+        }
+
+            .admin-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .btn-teal {
+            background-color: var(--easyrent-teal);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            padding: 10px 20px;
+        }
+
+            .btn-teal:hover {
+                background-color: var(--easyrent-teal-light);
+                color: white;
+            }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="d-flex align-items-center mb-5">
+            <img src="~/images/logo.png" alt="Trust Rent A Car Logo" style="height: 32px;" class="me-2">
+            <span class="brand-name h4 mb-0">EasyRent</span>
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="#"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a>
+            <a class="nav-link" href="#"><i class="bi bi-people-fill me-2"></i> User Management</a>
+            <a class="nav-link" asp-controller="Vehicles" asp-action="Index"><i class="bi bi-car-front-fill me-2"></i> Fleet Management</a>
+            <a class="nav-link" href="#"><i class="bi bi-calendar-check-fill me-2"></i> Bookings</a>
+            <hr class="opacity-10 my-4">
+            <a class="nav-link text-danger" id="logout-btn" href="javascript:void(0);">
+                <i class="bi bi-box-arrow-left me-2"></i> Logout
+            </a>
+        </nav>
+    </div>
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+                document.getElementById('logout-btn').addEventListener('click', function (e) {
+            Swal.fire({
+                title: '<span style="font-family: Montserrat; font-weight: 700; color: #20515d;">Confirm Logout</span>',
+                html: '<p style="font-family: Inter; color: #64748b;">Are you sure you want to end your session with EasyRent?</p>',
+                icon: 'warning',
+                iconColor: '#20515d',
+                showCancelButton: true,
+                confirmButtonColor: '#20515d', // Deep Teal from Landing Page
+                cancelButtonColor: '#f3f4f6',
+                confirmButtonText: 'Yes, Sign Out',
+                cancelButtonText: '<span style="color: #64748b;">Cancel</span>',
+                reverseButtons: true,
+                background: '#ffffff',
+                padding: '2.5rem',
+                borderRadius: '20px', // Matches your card design
+                customClass: {
+                    popup: 'shadow-lg border-0',
+                    confirmButton: 'px-4 py-2 fw-bold',
+                    cancelButton: 'px-4 py-2 fw-bold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirects to your Account Controller Logout action
+                    window.location.href = '@Url.Action("Logout", "Admin")';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
