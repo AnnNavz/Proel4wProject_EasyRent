@@ -26,26 +26,22 @@ namespace Proel4wProject_EasyRent.Controllers
             return View(await _context.Users.ToListAsync());
         }
 
-        // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: Users/Details/5
+		public async Task<IActionResult> Details(int? id)
+		{
+			if (id == null) return NotFound();
 
-            var users = await _context.Users
-                .FirstOrDefaultAsync(m => m.UserId == id);
-            if (users == null)
-            {
-                return NotFound();
-            }
+			var user = await _context.Users
+				.Include(u => u.Role) // CRITICAL: Loads the Role table data
+				.FirstOrDefaultAsync(m => m.UserId == id);
 
-            return View(users);
-        }
+			if (user == null) return NotFound();
 
-        // GET: Users/Create
-        public IActionResult Create()
+			return View(user);
+		}
+
+		// GET: Users/Create
+		public IActionResult Create()
         {
             ViewData["UserRole"] = new SelectList(_context.Role, "RoleId", "UserRole");
             return View();

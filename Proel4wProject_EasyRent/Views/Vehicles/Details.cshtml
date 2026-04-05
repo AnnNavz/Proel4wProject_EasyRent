@@ -1,39 +1,55 @@
 ﻿@model Proel4wProject_EasyRent.Models.Vehicle
 
 @{
-    ViewData["Title"] = "Details";
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Vehicle Details";
 }
 
-<h1>Details</h1>
+<div class="container-fluid">
+    <div class="mb-3">
+        <a asp-action="Index" class="text-decoration-none text-muted small">
+            <i class="bi bi-arrow-left me-2"></i> Back to Fleet
+        </a>
+    </div>
 
-<div>
-    <h4>Vehicle</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModelName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModelName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartingPrice)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartingPrice)
-        </dd>
-        <dt class="col-sm-2">Benefits</dt>
-        <dd class="col-sm-10">
-            <ul>
-                @foreach (var benefit in Model.Benefits)
-                {
-                    <li>@benefit.Description</li>
-                }
-            </ul>
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.VehicleId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="management-card p-5 shadow-sm border-0 bg-white" style="border-radius: 16px;">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-0" style="font-family: Montserrat; color: #20515d;">@Model.ModelName</h2>
+                        <p class="text-muted">Detailed specifications and included benefits.</p>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-bold">Active Fleet</span>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-6">
+                        <label class="small text-muted text-uppercase fw-bold d-block">Starting Price</label>
+                        <h4 class="fw-bold text-dark">₱ @Model.StartingPrice.ToString("N2")</h4>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mb-3" style="color: #20515d;">Standard Benefits</h5>
+                <div class="row g-3">
+                    @foreach (var benefit in Model.Benefits)
+                    {
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 border rounded-3 bg-light bg-opacity-50">
+                                <i class="bi bi-check-circle-fill me-3" style="color: #20515d;"></i>
+                                <span class="fw-medium">@benefit.Description</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="mt-5 d-flex gap-2 border-top pt-4">
+                    <a asp-action="Edit" asp-route-id="@Model.VehicleId" class="btn btn-teal px-5" style="background-color: #20515d; color: white; border-radius: 8px;">
+                        <i class="bi bi-pencil-square me-2"></i> Edit Details
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

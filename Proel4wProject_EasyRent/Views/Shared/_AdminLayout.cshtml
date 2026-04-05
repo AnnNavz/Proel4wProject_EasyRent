@@ -11,34 +11,32 @@
 
     <style>
         :root {
-            /* Colors inspired by the EasyRent Main Page */
-            --easyrent-teal: #20515d; /* Dark teal from the hero gradient */
+            --easyrent-teal: #20515d; 
             --easyrent-teal-light: #2f7585;
-            --easyrent-accent: #3b82f6; /* Modern blue accent */
-            --easyrent-bg: #f3f4f6; /* Soft gray background */
+            --easyrent-accent: #3b82f6; 
+            --easyrent-bg: #f3f4f6;
             --sidebar-bg: #1e293b;
         }
 
         body {
             background-color: var(--easyrent-bg);
-            font-family: 'Inter', sans-serif; /* SUV/Body font */
+            font-family: 'Inter', sans-serif; 
             color: #1f2937;
         }
 
         h1, h2, h3, .brand-name {
-            font-family: 'Montserrat', sans-serif; /* Main heading font */
+            font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
 
-        /* Sidebar Styling */
         .sidebar {
             width: 260px;
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
-            background: var(--easyrent-teal); /* Thematic color */
+            background: var(--easyrent-teal);
             color: white;
             padding: 1.5rem;
             box-shadow: 4px 0 10px rgba(0,0,0,0.05);
@@ -64,7 +62,6 @@
             padding: 40px;
         }
 
-        /* Card Styling to match the "Vehicle Types" section */
         .admin-card {
             border: none;
             border-radius: 16px;
@@ -90,6 +87,36 @@
                 background-color: var(--easyrent-teal-light);
                 color: white;
             }
+
+        .management-card, .admin-form-card {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--easyrent-teal);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .action-link {
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
     </style>
 </head>
 <body>
@@ -101,7 +128,7 @@
 
         <nav class="nav flex-column">
             <a class="nav-link active" href="#"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a>
-            <a class="nav-link" href="#"><i class="bi bi-people-fill me-2"></i> User Management</a>
+            <a class="nav-link" asp-controller="Users" asp-action="Index"><i class="bi bi-people-fill me-2"></i> User Management</a>
             <a class="nav-link" asp-controller="Vehicles" asp-action="Index"><i class="bi bi-car-front-fill me-2"></i> Fleet Management</a>
             <a class="nav-link" href="#"><i class="bi bi-calendar-check-fill me-2"></i> Bookings</a>
             <hr class="opacity-10 my-4">
@@ -111,9 +138,14 @@
         </nav>
     </div>
 
+
+
     <main class="main-content">
         @RenderBody()
     </main>
+
+
+    @await RenderSectionAsync("Scripts", required: false)
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -124,14 +156,14 @@
                 icon: 'warning',
                 iconColor: '#20515d',
                 showCancelButton: true,
-                confirmButtonColor: '#20515d', // Deep Teal from Landing Page
+                confirmButtonColor: '#20515d', 
                 cancelButtonColor: '#f3f4f6',
                 confirmButtonText: 'Yes, Sign Out',
                 cancelButtonText: '<span style="color: #64748b;">Cancel</span>',
                 reverseButtons: true,
                 background: '#ffffff',
                 padding: '2.5rem',
-                borderRadius: '20px', // Matches your card design
+                borderRadius: '20px', 
                 customClass: {
                     popup: 'shadow-lg border-0',
                     confirmButton: 'px-4 py-2 fw-bold',
@@ -139,7 +171,6 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Redirects to your Account Controller Logout action
                     window.location.href = '@Url.Action("Logout", "Admin")';
                 }
             });

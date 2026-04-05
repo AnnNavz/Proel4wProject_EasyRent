@@ -1,48 +1,90 @@
 ﻿@model Proel4wProject_EasyRent.Models.Users
 
 @{
-    ViewData["Title"] = "Details";
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "User Details";
 }
 
-<h1>Details</h1>
+<div class="container-fluid">
+    <div class="mb-3">
+        <a asp-action="Index" class="text-decoration-none text-muted small d-inline-flex align-items-center">
+            <i class="bi bi-arrow-left me-2"></i> Back to User List
+        </a>
+    </div>
 
-<div>
-    <h4>Users</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserFirstName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserFirstName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserLastName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserLastName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserEmail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserEmail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ConfirmPassword)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ConfirmPassword)
-        </dd>
-    </dl>
+    <div class="management-card p-5 shadow-sm border-0 bg-white" style="border-radius: 16px;">
+        <div class="d-flex align-items-center mb-5">
+            @* User Avatar *@
+            <div class="user-avatar me-4" style="width: 80px; height: 80px; font-size: 2rem; background-color: #20515d; color: white; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-family: Montserrat; font-weight: 700;">
+                @Model.UserFirstName.Substring(0, 1)@Model.UserLastName.Substring(0, 1)
+            </div>
+
+            <div>
+                <h1 class="fw-bold mb-0" style="font-family: Montserrat; color: #20515d;">@Model.UserFirstName @Model.UserLastName</h1>
+
+                @* Role Badge (Matching your image) *@
+                <span class="badge rounded-pill @(Model.RoleId == 1 ? "bg-primary" : "bg-secondary") bg-opacity-10 text-@(Model.RoleId == 1 ? "primary" : "secondary") px-3 py-2">
+                    @(Model.RoleId == 1 ? "Admin" : "Customer")
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-5">
+            <div class="col-md-6">
+                <div class="info-group mb-4">
+                    <label class="text-muted small fw-bold text-uppercase mb-1 d-block">Full Name</label>
+                    <p class="fs-5 text-dark border-bottom pb-2">@Model.UserFirstName @Model.UserLastName</p>
+                </div>
+
+                <div class="info-group mb-4">
+                    <label class="text-muted small fw-bold text-uppercase mb-1 d-block">Email Address</label>
+                    <p class="fs-5 text-dark border-bottom pb-2">@Model.UserEmail</p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="info-group mb-4">
+                    <label class="text-muted small fw-bold text-uppercase mb-1 d-block">User ID</label>
+                    <p class="fs-5 text-dark border-bottom pb-2">#@Model.UserId</p>
+                </div>
+
+                <div class="info-group mb-4">
+                    <label class="text-muted small fw-bold text-uppercase mb-1 d-block">Password</label>
+                    <div class="d-flex align-items-center border-bottom pb-2">
+                        @* Note: If hashed, this will show the hash string *@
+                        <input type="password" class="form-control-plaintext fs-6 text-dark flex-grow-1" id="passInput" value="@Model.Password" readonly>
+                        <button class="btn btn-sm text-muted" type="button" onclick="togglePassword('passInput', this)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-teal px-4" style="background-color: #20515d; color: white;">
+                <i class="bi bi-pencil-square me-2"></i> Edit Account
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                Return to List
+            </a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.UserId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        }
+    </script>
+}
+}

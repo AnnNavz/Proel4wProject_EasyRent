@@ -1,50 +1,83 @@
 ﻿@model Proel4wProject_EasyRent.Models.ViewModels.VehicleCreateViewModel
 
-<h1>Edit Vehicle</h1>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Edit Vehicle";
+}
 
-<form asp-action="Edit">
-    <input type="hidden" asp-for="Vehicle.VehicleId" />
-
-    <div class="form-group">
-        <label asp-for="Vehicle.ModelName"></label>
-        <input asp-for="Vehicle.ModelName" class="form-control" />
+<div class="container-fluid">
+    <div class="mb-3">
+        <a asp-action="Index" class="text-decoration-none text-muted small d-inline-flex align-items-center">
+            <i class="bi bi-arrow-left me-2"></i> Back to Fleet List
+        </a>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Vehicle.StartingPrice"></label>
-        <input asp-for="Vehicle.StartingPrice" class="form-control" />
-    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="management-card p-5 shadow-sm border-0 bg-white" style="border-radius: 16px;">
+                <h2 class="fw-bold mb-0" style="font-family: Montserrat; color: #20515d;">Edit Vehicle</h2>
+                <p class="text-muted mb-4">Update the specifications and benefits for this fleet unit.</p>
 
-    <h4>Benefits</h4>
-    <div id="benefit-container">
-        @for (int i = 0; i < Model.BenefitDescriptions.Count; i++)
-        {
-            <div class="benefit-row mb-2">
-                <input name="BenefitDescriptions[@i]" value="@Model.BenefitDescriptions[i]" class="form-control" />
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+                    <input type="hidden" asp-for="Vehicle.VehicleId" />
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="Vehicle.ModelName" class="form-label fw-bold small text-muted text-uppercase">Vehicle Model</label>
+                            <input asp-for="Vehicle.ModelName" class="form-control" />
+                            <span asp-validation-for="Vehicle.ModelName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Vehicle.StartingPrice" class="form-label fw-bold small text-muted text-uppercase">Starting Price (PHP)</label>
+                            <input asp-for="Vehicle.StartingPrice" class="form-control" />
+                            <span asp-validation-for="Vehicle.StartingPrice" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mb-3" style="color: #20515d;">Vehicle Benefits</h5>
+                    <div id="benefit-container">
+                        @for (int i = 0; i < Model.BenefitDescriptions.Count; i++)
+                        {
+                            <div class="benefit-row input-group mb-2">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="bi bi-check-circle-fill text-teal" style="color: #20515d;"></i>
+                                </span>
+                                <input name="BenefitDescriptions[@i]" value="@Model.BenefitDescriptions[i]" class="form-control border-start-0" />
+                            </div>
+                        }
+                    </div>
+                    <button type="button" id="add-benefit-btn" class="btn btn-outline-secondary btn-sm mt-2">
+                        <i class="bi bi-plus-lg me-1"></i> Add Benefit
+                    </button>
+
+                    <div class="mt-5 d-flex gap-2">
+                        <button type="submit" class="btn btn-teal px-5 py-2" style="background-color: #20515d; color: white; border: none; border-radius: 8px; font-weight: 600;">
+                            <i class="bi bi-save-fill me-2"></i> Save Changes
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 8px;">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
-        }
+        </div>
     </div>
-    <button type="button" id="add-benefit-btn" class="btn btn-secondary btn-sm">+ Add Benefit</button>
-
-    <div class="form-group mt-3">
-        <input type="submit" value="Save Changes" class="btn btn-primary" />
-    </div>
-</form>
-
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
-
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         document.getElementById('add-benefit-btn').addEventListener('click', function () {
             const container = document.getElementById('benefit-container');
             const index = container.getElementsByClassName('benefit-row').length;
             const div = document.createElement('div');
-            div.className = 'benefit-row mb-2';
-            div.innerHTML = `<input name="BenefitDescriptions[${index}]" class="form-control" placeholder="Add a benefit..." />`;
+            div.className = 'benefit-row input-group mb-2';
+            div.innerHTML = `
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-check-circle-fill" style="color: #20515d;"></i></span>
+                <input name="BenefitDescriptions[${index}]" class="form-control border-start-0" placeholder="Add a benefit..." />`;
             container.appendChild(div);
         });
     </script>

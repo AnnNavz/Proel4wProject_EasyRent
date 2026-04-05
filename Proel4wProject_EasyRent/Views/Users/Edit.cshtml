@@ -1,58 +1,95 @@
 ﻿@model Proel4wProject_EasyRent.Models.Users
 
 @{
-    ViewData["Title"] = "Edit";
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Edit User";
 }
 
-<h1>Edit</h1>
+<div class="container-fluid">
+    @* Consistent Back Link *@
+    <div class="mb-3">
+        <a asp-action="Index" class="text-decoration-none text-muted small d-inline-flex align-items-center">
+            <i class="bi bi-arrow-left me-2"></i> Back to User List
+        </a>
+    </div>
 
-<h4>Users</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="UserId" />
-            <div class="form-group">
-                <label asp-for="UserFirstName" class="control-label"></label>
-                <input asp-for="UserFirstName" class="form-control" />
-                <span asp-validation-for="UserFirstName" class="text-danger"></span>
+    @* Centered and Wider Layout (col-lg-11) *@
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="management-card p-5 shadow-sm border-0 bg-white" style="border-radius: 16px;">
+
+                <div class="mb-5">
+                    <h2 class="fw-bold mb-0" style="font-family: Montserrat; color: #20515d;">Edit User Account</h2>
+                    <p class="text-muted">Update the profile details and access levels for @Model.UserFirstName @Model.UserLastName.</p>
+                </div>
+
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+                    <input type="hidden" asp-for="UserId" />
+
+                    @* Name Row *@
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="UserFirstName" class="form-label fw-bold small text-muted text-uppercase">First Name</label>
+                            <input asp-for="UserFirstName" class="form-control" placeholder="First Name" />
+                            <span asp-validation-for="UserFirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="UserLastName" class="form-label fw-bold small text-muted text-uppercase">Last Name</label>
+                            <input asp-for="UserLastName" class="form-control" placeholder="Last Name" />
+                            <span asp-validation-for="UserLastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @* Email *@
+                    <div class="mb-4">
+                        <label asp-for="UserEmail" class="form-label fw-bold small text-muted text-uppercase">Email Address</label>
+                        <input asp-for="UserEmail" class="form-control" placeholder="email@easyrent.com" />
+                        <span asp-validation-for="UserEmail" class="text-danger small"></span>
+                    </div>
+
+                    <hr class="my-5 opacity-25">
+
+                    @* Security Row *@
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="Password" class="form-label fw-bold small text-muted text-uppercase">New Password</label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Leave blank to keep current" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ConfirmPassword" class="form-label fw-bold small text-muted text-uppercase">Confirm New Password</label>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm new password" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @* Role Selection *@
+                    <div class="mb-5">
+                        <label asp-for="RoleId" class="form-label fw-bold small text-muted text-uppercase">System Role</label>
+                        <select asp-for="RoleId" class="form-select" asp-items="ViewBag.UserRole">
+                            <option value="">-- Change Access Level --</option>
+                        </select>
+                        <span asp-validation-for="RoleId" class="text-danger small"></span>
+                    </div>
+
+                    @* Action Buttons - Aligned Left like Vehicle Create *@
+                    <div class="mt-5 d-flex gap-2">
+                        <button type="submit" class="btn btn-teal px-5 py-2" style="background-color: #20515d; color: white; border: none; border-radius: 8px; font-weight: 600;">
+                            <i class="bi bi-save-fill me-2"></i> Save Changes
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 8px;">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="UserLastName" class="control-label"></label>
-                <input asp-for="UserLastName" class="form-control" />
-                <span asp-validation-for="UserLastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UserEmail" class="control-label"></label>
-                <input asp-for="UserEmail" class="form-control" />
-                <span asp-validation-for="UserEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConfirmPassword" class="control-label"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <div>
-                <label asp-for="Role" class="control-label"></label>
-                <select asp-for="Role" class="form-control" asp-items="ViewBag.UserRole"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
