@@ -1,0 +1,230 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --brand-teal: #225761;
+        --brand-accent: #3b7d8a;
+        --glass-white: rgba(255, 255, 255, 0.92);
+        --heading-font: 'Montserrat', sans-serif;
+        --body-font: 'Inter', sans-serif;
+    }
+
+    /* Full-screen background with vehicle image and gradient overlay */
+    .page-wrapper {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 20px;
+        position: relative;
+        /* Image related to renting/driving */
+        background: linear-gradient(135deg, rgba(34, 87, 97, 0.9) 0%, rgba(22, 56, 63, 0.7) 100%), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1920');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    /* Glassmorphism Main Container */
+    .contact-card {
+        max-width: 1100px;
+        width: 100%;
+        background: var(--glass-white);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 30px;
+        display: flex;
+        overflow: hidden;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* Left Side - Soft Teal Panel */
+    .info-panel {
+        flex: 1;
+        background: rgba(34, 87, 97, 0.05);
+        padding: 60px;
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+        .info-panel h2 {
+            font-family: var(--heading-font);
+            font-weight: 900;
+            color: var(--brand-teal);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+    .contact-method {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+        padding: 15px;
+        background: white;
+        border-radius: 18px;
+        box-shadow: 0 10px 20px rgba(34, 87, 97, 0.05);
+    }
+
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        background: var(--brand-teal);
+        color: white;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        font-size: 1.2rem;
+    }
+
+    /* Right Side - Form Panel */
+    .form-panel {
+        flex: 1.5;
+        padding: 60px;
+        background: white;
+    }
+
+    .custom-input-group {
+        margin-bottom: 20px;
+    }
+
+        .custom-input-group label {
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--brand-teal);
+            margin-bottom: 8px;
+            display: block;
+            letter-spacing: 1px;
+        }
+
+    .custom-field {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #f1f5f9;
+        border-radius: 12px;
+        background: #f8fafc;
+        transition: 0.3s;
+    }
+
+        .custom-field:focus {
+            outline: none;
+            border-color: var(--brand-teal);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(34, 87, 97, 0.1);
+        }
+
+    .btn-submit {
+        background: var(--brand-teal);
+        color: white;
+        width: 100%;
+        padding: 18px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 800;
+        font-family: var(--heading-font);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+        .btn-submit:hover {
+            background: #1a444d;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(34, 87, 97, 0.25);
+        }
+
+    @@media (max-width: 991px) {
+        .contact-card {
+            flex-direction: column;
+        }
+
+        .info-panel {
+            padding: 40px;
+        }
+
+        .form-panel {
+            padding: 40px;
+        }
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="contact-card">
+
+        <div class="info-panel">
+            <h2>Get in Touch</h2>
+            <p class="text-muted mb-5">Have questions about your next rental? Our team in Talisay is here to help you get on the road.</p>
+
+            <div class="contact-method">
+                <div class="icon-box"><i class="fas fa-phone-alt"></i></div>
+                <div>
+                    <small class="text-muted d-block">Hotline</small>
+                    <span class="fw-bold text-dark">+63 919 459 4264</span>
+                </div>
+            </div>
+
+            <div class="contact-method">
+                <div class="icon-box"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <small class="text-muted d-block">Email Us</small>
+                    <span class="fw-bold text-dark">support@easyrent.ph</span>
+                </div>
+            </div>
+
+            <div class="contact-method">
+                <div class="icon-box"><i class="fas fa-map-marker-alt"></i></div>
+                <div>
+                    <small class="text-muted d-block">Location</small>
+                    <span class="fw-bold text-dark">Talisay City, Cebu</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-panel">
+            <h4 class="fw-bold mb-4" style="color: var(--brand-teal);">Send a Message</h4>
+            <form>
+                <div class="row">
+                    <div class="col-md-6 custom-input-group">
+                        <label>First Name</label>
+                        <input type="text" class="custom-field" placeholder="Ann Shirley">
+                    </div>
+                    <div class="col-md-6 custom-input-group">
+                        <label>Last Name</label>
+                        <input type="text" class="custom-field" placeholder="Navasca">
+                    </div>
+                </div>
+
+                <div class="custom-input-group">
+                    <label>Email Address</label>
+                    <input type="email" class="custom-field" placeholder="yourname@email.com">
+                </div>
+
+                <div class="custom-input-group">
+                    <label>How can we assist you?</label>
+                    <textarea class="custom-field" rows="4" placeholder="Tell us about your rental needs..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Send Inquiry <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>

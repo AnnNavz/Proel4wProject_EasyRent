@@ -339,8 +339,8 @@
                 }
                 <a asp-controller="Home" asp-action="Index" class="nav-item @(currentAction == "Index" && currentController == "Home" ? "active" : "")">Home</a>
                 <a asp-controller="Home" asp-action="Vehicles" class="nav-item @((currentAction == "Vehicles" || currentAction == "VehicleDetails") && currentController == "Home" ? "active" : "")">Vehicles</a>
-                <a href="#" class="nav-item">Contacts</a>
-                <a href="#" class="nav-item">About Us</a>
+                <a asp-controller="AboutUs" asp-action="AboutUsView" class="nav-item">About Us</a>
+                <a asp-controller="ContactUs" asp-action="ContactUsView" class="nav-item">Contacts</a>
             </nav>
 
             <div class="nav-actions">
