@@ -1,4 +1,4 @@
-﻿@model Proel4wProject_EasyRent.Models.ViewModels.VehicleCreateViewModel
+@model Proel4wProject_EasyRent.Models.ViewModels.VehicleCreateViewModel
 
 @{
     Layout = "_AdminLayout";
@@ -13,35 +13,115 @@
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-lg-9">
+        <div class="col-lg-10">
             <div class="management-card p-5 shadow-sm border-0 bg-white" style="border-radius: 16px;">
                 <h2 class="fw-bold mb-0" style="font-family: Montserrat; color: #20515d;">Edit Vehicle</h2>
                 <p class="text-muted mb-4">Update the specifications and benefits for this fleet unit.</p>
 
-                <form asp-action="Edit">
+                <form asp-action="Edit" enctype="multipart/form-data">
                     <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
                     <input type="hidden" asp-for="Vehicle.VehicleId" />
 
-                    <div class="row g-3 mb-4">
+                    @* Image Upload Section *@
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Vehicle Image</label>
+                        <div class="border rounded-3 p-4 text-center bg-light" style="border-style: dashed !important; cursor: pointer;" onclick="document.getElementById('imageUpload').click();">
+                            @if (!string.IsNullOrEmpty(Model.Vehicle.ImagePath))
+                            {
+                                <div id="image-preview-area" style="display: none;">
+                                    <i class="bi bi-cloud-arrow-up-fill text-muted" style="font-size: 2.5rem;"></i>
+                                    <p class="text-muted small mb-0 mt-2">Click to change vehicle image</p>
+                                </div>
+                                <img id="image-preview" src="~/images/vehicles/@Model.Vehicle.ImagePath" alt="Current Image" style="max-height: 200px; border-radius: 12px; object-fit: cover;" />
+                                <p class="text-muted small mt-2 mb-0">Click to change image</p>
+                            }
+                            else
+                            {
+                                <div id="image-preview-area">
+                                    <i class="bi bi-cloud-arrow-up-fill text-muted" style="font-size: 2.5rem;"></i>
+                                    <p class="text-muted small mb-0 mt-2">Click to upload a vehicle image</p>
+                                    <p class="text-muted small mb-0">JPEG, PNG, WebP (Max 5MB)</p>
+                                </div>
+                                <img id="image-preview" src="#" alt="Preview" style="display: none; max-height: 200px; border-radius: 12px; object-fit: cover;" />
+                            }
+                        </div>
+                        <input type="file" name="ImageFile" id="imageUpload" accept="image/*" class="d-none" onchange="previewImage(this)" />
+                    </div>
+
+                    @* Model Name & Price *@
+                    <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label asp-for="Vehicle.ModelName" class="form-label fw-bold small text-muted text-uppercase">Vehicle Model</label>
                             <input asp-for="Vehicle.ModelName" class="form-control" />
                             <span asp-validation-for="Vehicle.ModelName" class="text-danger small"></span>
                         </div>
                         <div class="col-md-6">
-                            <label asp-for="Vehicle.StartingPrice" class="form-label fw-bold small text-muted text-uppercase">Starting Price (PHP)</label>
+                            <label asp-for="Vehicle.StartingPrice" class="form-label fw-bold small text-muted text-uppercase">Starting Price (₱)</label>
                             <input asp-for="Vehicle.StartingPrice" class="form-control" />
                             <span asp-validation-for="Vehicle.StartingPrice" class="text-danger small"></span>
                         </div>
                     </div>
 
+                    @* Vehicle Type, Status, Price Per *@
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label asp-for="Vehicle.VehicleType" class="form-label fw-bold small text-muted text-uppercase">Vehicle Type</label>
+                            <select asp-for="Vehicle.VehicleType" class="form-select">
+                                <option value="SUV">SUV</option>
+                                <option value="Sedan">Sedan</option>
+                                <option value="Van">Van</option>
+                                <option value="Pickup">Pickup</option>
+                                <option value="Hatchback">Hatchback</option>
+                                <option value="Motorcycle">Motorcycle</option>
+                            </select>
+                            <span asp-validation-for="Vehicle.VehicleType" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Vehicle.Status" class="form-label fw-bold small text-muted text-uppercase">Status</label>
+                            <select asp-for="Vehicle.Status" class="form-select">
+                                <option value="Available">🟢 Available</option>
+                                <option value="Rented">🔴 Rented</option>
+                                <option value="Maintenance">🟡 Maintenance</option>
+                            </select>
+                            <span asp-validation-for="Vehicle.Status" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Vehicle.PricePer" class="form-label fw-bold small text-muted text-uppercase">Price Per</label>
+                            <input asp-for="Vehicle.PricePer" class="form-control" placeholder="e.g. per 3 hours" />
+                        </div>
+                    </div>
+
+                    @* Fleet Count *@
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Vehicle.FleetCount" class="form-label fw-bold small text-muted text-uppercase">Total Fleet Units</label>
+                            <input asp-for="Vehicle.FleetCount" type="number" class="form-control" min="1" max="100" />
+                            <span asp-validation-for="Vehicle.FleetCount" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Vehicle.AvailableFleet" class="form-label fw-bold small text-muted text-uppercase">Available Fleet Units</label>
+                            <input asp-for="Vehicle.AvailableFleet" type="number" class="form-control" min="0" max="100" />
+                            <span asp-validation-for="Vehicle.AvailableFleet" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @* Description *@
+                    <div class="mb-4">
+                        <label asp-for="Vehicle.Description" class="form-label fw-bold small text-muted text-uppercase">Description</label>
+                        <textarea asp-for="Vehicle.Description" class="form-control" rows="3" placeholder="Brief description..."></textarea>
+                        <span asp-validation-for="Vehicle.Description" class="text-danger small"></span>
+                    </div>
+
+                    <hr class="my-4 opacity-25">
+
+                    @* Benefits *@
                     <h5 class="fw-bold mb-3" style="color: #20515d;">Vehicle Benefits</h5>
                     <div id="benefit-container">
                         @for (int i = 0; i < Model.BenefitDescriptions.Count; i++)
                         {
                             <div class="benefit-row input-group mb-2">
                                 <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-check-circle-fill text-teal" style="color: #20515d;"></i>
+                                    <i class="bi bi-check-circle-fill" style="color: #20515d;"></i>
                                 </span>
                                 <input name="BenefitDescriptions[@i]" value="@Model.BenefitDescriptions[i]" class="form-control border-start-0" />
                             </div>
@@ -70,6 +150,22 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
+        // Image preview
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var preview = document.getElementById('image-preview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'inline-block';
+                    var area = document.getElementById('image-preview-area');
+                    if (area) area.style.display = 'none';
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Add benefit
         document.getElementById('add-benefit-btn').addEventListener('click', function () {
             const container = document.getElementById('benefit-container');
             const index = container.getElementsByClassName('benefit-row').length;

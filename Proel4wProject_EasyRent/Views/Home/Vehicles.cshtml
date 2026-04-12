@@ -1,0 +1,718 @@
+@model IEnumerable<Proel4wProject_EasyRent.Models.Vehicle>
+
+@{
+    ViewData["Title"] = "Vehicles";
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int totalItems = ViewBag.TotalItems ?? 0;
+    var vehicleTypes = ViewBag.VehicleTypes as List<string> ?? new List<string>();
+}
+
+<style>
+    /* ===== VEHICLES PAGE STYLES ===== */
+    #vehicles-page {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Hero Banner */
+    #vehicles-page .vehicles-hero {
+        background: linear-gradient(135deg, #1E4D57 0%, #2D8191 50%, #468585 100%);
+        padding: 70px 0 60px;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    #vehicles-page .vehicles-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 50%, rgba(255,255,255,0.03) 0%, transparent 50%);
+        pointer-events: none;
+    }
+
+    #vehicles-page .vehicles-hero h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 2.6rem;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+    }
+
+    #vehicles-page .vehicles-hero p {
+        font-size: 0.95rem;
+        opacity: 0.85;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* Filter Bar */
+    #vehicles-page .filter-bar {
+        background: #ffffff;
+        border: 1px solid #e8ecf0;
+        border-radius: 16px;
+        padding: 24px 30px;
+        margin-top: -35px;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    #vehicles-page .filter-bar .form-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #7a8a96;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+
+    #vehicles-page .filter-bar .form-select,
+    #vehicles-page .filter-bar .form-control {
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 0.88rem;
+        color: #334155;
+        transition: border-color 0.2s;
+    }
+
+    #vehicles-page .filter-bar .form-select:focus,
+    #vehicles-page .filter-bar .form-control:focus {
+        border-color: #2D8191;
+        box-shadow: 0 0 0 3px rgba(45,129,145,0.12);
+    }
+
+    #vehicles-page .btn-filter {
+        background: #1E4D57;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        transition: all 0.25s;
+        height: 44px;
+    }
+
+    #vehicles-page .btn-filter:hover {
+        background: #2D8191;
+        transform: translateY(-1px);
+    }
+
+    #vehicles-page .btn-reset {
+        background: transparent;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 10px 18px;
+        font-weight: 500;
+        font-size: 0.88rem;
+        transition: all 0.25s;
+        height: 44px;
+    }
+
+    #vehicles-page .btn-reset:hover {
+        background: #f8fafc;
+        color: #1E4D57;
+        border-color: #cbd5e1;
+    }
+
+    /* Results Info */
+    #vehicles-page .results-info {
+        font-size: 0.88rem;
+        color: #64748b;
+        margin-bottom: 20px;
+    }
+
+    #vehicles-page .results-info strong {
+        color: #1E4D57;
+    }
+
+    /* Vehicle Card */
+    #vehicles-page .vehicle-card {
+        border: 1px solid #e8ecf0;
+        border-radius: 20px;
+        background: white;
+        overflow: hidden;
+        transition: all 0.35s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #vehicles-page .vehicle-card:hover {
+        box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+        transform: translateY(-4px);
+    }
+
+    /* Image Wrapper */
+    #vehicles-page .v-image-wrapper {
+        position: relative;
+        padding: 12px 12px 0;
+    }
+
+    #vehicles-page .v-image {
+        width: 100%;
+        height: 220px;
+        border-radius: 16px;
+        object-fit: cover;
+        object-position: center;
+        background-color: #f1f5f9;
+    }
+
+    /* Status Badge */
+    #vehicles-page .status-badge {
+        position: absolute;
+        top: 22px;
+        left: 22px;
+        padding: 6px 16px;
+        border-radius: 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    #vehicles-page .status-available {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+
+    #vehicles-page .status-rented {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    #vehicles-page .status-maintenance {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    /* Wishlist Button */
+    #vehicles-page .wish-btn {
+        position: absolute;
+        top: 22px;
+        right: 22px;
+        background: white;
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.25s;
+        cursor: pointer;
+    }
+
+    #vehicles-page .wish-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    /* Price Tag */
+    #vehicles-page .price-tag {
+        position: absolute;
+        bottom: 12px;
+        left: 22px;
+        background: white;
+        padding: 8px 16px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    #vehicles-page .price-tag .price-label {
+        font-size: 0.62rem;
+        color: #94a3b8;
+        display: block;
+        line-height: 1;
+        margin-bottom: 2px;
+    }
+
+    #vehicles-page .price-tag .price-amount {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+
+    /* Card Info */
+    #vehicles-page .card-info {
+        padding: 16px 22px 22px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    #vehicles-page .card-info .v-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #0f172a;
+        margin-bottom: 2px;
+    }
+
+    #vehicles-page .card-info .v-type {
+        font-size: 0.78rem;
+        color: #2D8191;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    #vehicles-page .avail-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #15803d;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.72rem;
+        font-weight: 600;
+    }
+
+    #vehicles-page .v-desc {
+        font-size: 0.82rem;
+        color: #64748b;
+        line-height: 1.5;
+        margin: 10px 0 14px;
+    }
+
+    /* Benefits Grid */
+    #vehicles-page .benefits-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 16px;
+        margin-bottom: 18px;
+    }
+
+    #vehicles-page .benefit-item {
+        font-size: 0.78rem;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    #vehicles-page .benefit-item::before {
+        content: '•';
+        color: #2D8191;
+        font-weight: bold;
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    /* CTA Button */
+    #vehicles-page .btn-rent {
+        background: #1E4D57;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 13px 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        margin-top: auto;
+        text-decoration: none;
+    }
+
+    #vehicles-page .btn-rent:hover {
+        background: #2D8191;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(45,129,145,0.3);
+    }
+
+    /* Pagination */
+    #vehicles-page .pagination-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 50px;
+        padding-bottom: 30px;
+    }
+
+    #vehicles-page .page-btn {
+        background: #1E4D57;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 10px 24px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.25s;
+        text-decoration: none;
+    }
+
+    #vehicles-page .page-btn:hover {
+        background: #2D8191;
+        color: white;
+    }
+
+    #vehicles-page .page-btn.disabled {
+        background: #cbd5e1;
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    #vehicles-page .page-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        transition: all 0.25s;
+        text-decoration: none;
+    }
+
+    #vehicles-page .page-number.active {
+        background: #2D8191;
+        color: white;
+        border-color: #2D8191;
+    }
+
+    #vehicles-page .page-number:hover:not(.active) {
+        background: #f1f5f9;
+        color: #1E4D57;
+    }
+
+    /* Empty State */
+    #vehicles-page .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+    #vehicles-page .empty-state .empty-icon {
+        width: 100px;
+        height: 100px;
+        background: #f1f5f9;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 2.5rem;
+        color: #94a3b8;
+    }
+
+    #vehicles-page .empty-state h3 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        color: #334155;
+        margin-bottom: 8px;
+    }
+
+    #vehicles-page .empty-state p {
+        color: #94a3b8;
+        font-size: 0.92rem;
+    }
+
+    /* No-image placeholder */
+    #vehicles-page .no-image-placeholder {
+        width: 100%;
+        height: 220px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #e2e8f0, #f1f5f9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 8px;
+        color: #94a3b8;
+    }
+
+    #vehicles-page .no-image-placeholder i {
+        font-size: 2.5rem;
+    }
+
+    #vehicles-page .no-image-placeholder span {
+        font-size: 0.78rem;
+        font-weight: 500;
+    }
+</style>
+
+<div id="vehicles-page">
+    <!-- Hero Banner -->
+    <section class="vehicles-hero">
+        <div class="container">
+            <h1>Drive Your Journey With Ease</h1>
+            <p>
+                Explore our premium fleet of rental vehicles — all transparent pricing
+                designed to get you on the road faster.
+            </p>
+        </div>
+    </section>
+
+    <div class="container" style="max-width: 1200px;">
+        <!-- Filter Bar -->
+        <form method="get" asp-action="Vehicles" asp-controller="Home" class="filter-bar mb-4">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="form-label">Vehicle Type</label>
+                    @{
+                        string currentType = ViewBag.CurrentType ?? "All";
+                        string currentStatus = ViewBag.CurrentStatus ?? "All";
+                    }
+                    <select name="vehicleType" class="form-select">
+                        @if (currentType == "All")
+                        {
+                            <option value="All" selected="selected">All Types</option>
+                        }
+                        else
+                        {
+                            <option value="All">All Types</option>
+                        }
+                        @foreach (var type in vehicleTypes)
+                        {
+                            if (currentType == type)
+                            {
+                                <option value="@type" selected="selected">@type</option>
+                            }
+                            else
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        @if (currentStatus == "All")
+                        {
+                            <option value="All" selected="selected">All Status</option>
+                        }
+                        else
+                        {
+                            <option value="All">All Status</option>
+                        }
+                        @if (currentStatus == "Available")
+                        {
+                            <option value="Available" selected="selected">Available</option>
+                        }
+                        else
+                        {
+                            <option value="Available">Available</option>
+                        }
+                        @if (currentStatus == "Rented")
+                        {
+                            <option value="Rented" selected="selected">Rented</option>
+                        }
+                        else
+                        {
+                            <option value="Rented">Rented</option>
+                        }
+                        @if (currentStatus == "Maintenance")
+                        {
+                            <option value="Maintenance" selected="selected">Maintenance</option>
+                        }
+                        else
+                        {
+                            <option value="Maintenance">Maintenance</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="form-label">Min Price (₱)</label>
+                    <input type="number" name="minPrice" class="form-control" placeholder="0" value="@ViewBag.CurrentMinPrice" />
+                </div>
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="form-label">Max Price (₱)</label>
+                    <input type="number" name="maxPrice" class="form-control" placeholder="Any" value="@ViewBag.CurrentMaxPrice" />
+                </div>
+                <div class="col-lg-2 col-md-4 col-6">
+                    <label class="form-label">Search</label>
+                    <input type="text" name="searchQuery" class="form-control" placeholder="Search model..." value="@ViewBag.CurrentSearch" />
+                </div>
+                <div class="col-lg-2 col-md-4 col-6 d-flex gap-2">
+                    <button type="submit" class="btn-filter flex-grow-1">
+                        <i class="bi bi-funnel-fill me-1"></i> Filter
+                    </button>
+                    <a asp-action="Vehicles" asp-controller="Home" class="btn-reset d-flex align-items-center">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <!-- Results Info -->
+        @if (totalItems > 0)
+        {
+            <div class="results-info">
+                Showing <strong>@Model.Count()</strong> of <strong>@totalItems</strong> vehicles
+            </div>
+        }
+
+        <!-- Vehicle Cards Grid -->
+        @if (Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var vehicle in Model)
+                {
+                    // Determine status class
+                    string statusClass = vehicle.Status switch
+                    {
+                        "Rented" => "status-rented",
+                        "Maintenance" => "status-maintenance",
+                        _ => "status-available"
+                    };
+
+                    <div class="col-lg-6 col-md-6">
+                        <div class="vehicle-card">
+                            <!-- Image Section -->
+                            <div class="v-image-wrapper">
+                                @if (!string.IsNullOrEmpty(vehicle.ImagePath))
+                                {
+                                    <img src="~/images/vehicles/@vehicle.ImagePath" alt="@vehicle.ModelName" class="v-image" />
+                                }
+                                else
+                                {
+                                    <div class="no-image-placeholder">
+                                        <i class="bi bi-car-front"></i>
+                                        <span>No image available</span>
+                                    </div>
+                                }
+
+                                <!-- Status Badge -->
+                                <div class="status-badge @statusClass">@vehicle.Status</div>
+
+                                <!-- Wishlist Button -->
+                                <button class="wish-btn" title="Save to wishlist">
+                                    <i class="bi bi-bookmark" style="color: #64748b;"></i>
+                                </button>
+
+                                <!-- Price Tag -->
+                                <div class="price-tag">
+                                    <span class="price-label">Starting from</span>
+                                    <span class="price-amount">₱@vehicle.StartingPrice.ToString("N0") @(vehicle.PricePer ?? "per 3 hours")</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Info -->
+                            <div class="card-info">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <div>
+                                        <div class="v-title">@vehicle.ModelName</div>
+                                        <div class="v-type">@vehicle.VehicleType</div>
+                                    </div>
+                                    <div class="avail-pill">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        @vehicle.AvailableFleet available
+                                    </div>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(vehicle.Description))
+                                {
+                                    <div class="v-desc">@vehicle.Description</div>
+                                }
+
+                                @if (vehicle.Benefits.Any())
+                                {
+                                    <div class="benefits-grid">
+                                        @foreach (var benefit in vehicle.Benefits)
+                                        {
+                                            <div class="benefit-item">@benefit.Description</div>
+                                        }
+                                    </div>
+                                }
+
+                                <a href="#" class="btn-rent">
+                                    Rent Now <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <div class="pagination-wrapper">
+                    @if (currentPage > 1)
+                    {
+                        <a asp-action="Vehicles" asp-controller="Home"
+                           asp-route-page="@(currentPage - 1)"
+                           asp-route-vehicleType="@ViewBag.CurrentType"
+                           asp-route-status="@ViewBag.CurrentStatus"
+                           asp-route-minPrice="@ViewBag.CurrentMinPrice"
+                           asp-route-maxPrice="@ViewBag.CurrentMaxPrice"
+                           asp-route-searchQuery="@ViewBag.CurrentSearch"
+                           class="page-btn">
+                            <i class="bi bi-arrow-left"></i> PREV
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-btn disabled"><i class="bi bi-arrow-left"></i> PREV</span>
+                    }
+
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <a asp-action="Vehicles" asp-controller="Home"
+                           asp-route-page="@i"
+                           asp-route-vehicleType="@ViewBag.CurrentType"
+                           asp-route-status="@ViewBag.CurrentStatus"
+                           asp-route-minPrice="@ViewBag.CurrentMinPrice"
+                           asp-route-maxPrice="@ViewBag.CurrentMaxPrice"
+                           asp-route-searchQuery="@ViewBag.CurrentSearch"
+                           class="page-number @(i == currentPage ? "active" : "")">
+                            @i
+                        </a>
+                    }
+
+                    @if (currentPage < totalPages)
+                    {
+                        <a asp-action="Vehicles" asp-controller="Home"
+                           asp-route-page="@(currentPage + 1)"
+                           asp-route-vehicleType="@ViewBag.CurrentType"
+                           asp-route-status="@ViewBag.CurrentStatus"
+                           asp-route-minPrice="@ViewBag.CurrentMinPrice"
+                           asp-route-maxPrice="@ViewBag.CurrentMaxPrice"
+                           asp-route-searchQuery="@ViewBag.CurrentSearch"
+                           class="page-btn">
+                            NEXT <i class="bi bi-arrow-right"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-btn disabled">NEXT <i class="bi bi-arrow-right"></i></span>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-car-front"></i>
+                </div>
+                <h3>No Vehicles Found</h3>
+                <p>There are no vehicles to display at the moment. Check back later or adjust your filters.</p>
+            </div>
+        }
+    </div>
+</div>

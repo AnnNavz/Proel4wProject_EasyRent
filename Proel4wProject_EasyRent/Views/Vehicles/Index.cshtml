@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Proel4wProject_EasyRent.Models.Vehicle>
+@model IEnumerable<Proel4wProject_EasyRent.Models.Vehicle>
 
 @{
     Layout = "_AdminLayout";
@@ -20,8 +20,12 @@
         <table class="table align-middle mb-0">
             <thead class="bg-light">
                 <tr class="text-muted small">
-                    <th class="ps-4 py-3">MODEL NAME</th>
+                    <th class="ps-4 py-3">IMAGE</th>
+                    <th class="py-3">MODEL NAME</th>
+                    <th class="py-3">TYPE</th>
                     <th class="py-3">STARTING PRICE</th>
+                    <th class="py-3">STATUS</th>
+                    <th class="py-3">FLEET</th>
                     <th class="py-3">KEY BENEFITS</th>
                     <th class="text-end pe-4 py-3">ACTIONS</th>
                 </tr>
@@ -29,22 +33,57 @@
             <tbody>
                 @foreach (var item in Model)
                 {
+                    // Status badge styling
+                    string badgeBg = item.Status switch
+                    {
+                        "Rented" => "bg-danger",
+                        "Maintenance" => "bg-warning text-dark",
+                        _ => "bg-success"
+                    };
+
                     <tr>
-                        <td class="ps-4">
+                        <td class="ps-4" style="width: 80px;">
+                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                            {
+                                <img src="~/images/vehicles/@item.ImagePath" alt="@item.ModelName"
+                                     style="width: 60px; height: 45px; border-radius: 8px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center bg-light rounded-3" style="width: 60px; height: 45px;">
+                                    <i class="bi bi-car-front text-muted"></i>
+                                </div>
+                            }
+                        </td>
+                        <td>
                             <div class="fw-bold text-dark fs-6">@item.ModelName</div>
                             <div class="small text-muted">ID: #VEH-@item.VehicleId</div>
                         </td>
                         <td>
+                            <span class="badge rounded-pill bg-light text-dark border fw-normal">@item.VehicleType</span>
+                        </td>
+                        <td>
                             <span class="fw-semibold text-dark">₱@item.StartingPrice.ToString("N2")</span>
-                            <span class="small text-muted">/ Hour</span>
+                            <span class="small text-muted">/ @(item.PricePer ?? "hr")</span>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill @badgeBg px-3 py-1">@item.Status</span>
+                        </td>
+                        <td>
+                            <span class="fw-semibold">@item.AvailableFleet</span>
+                            <span class="small text-muted">/ @item.FleetCount</span>
                         </td>
                         <td>
                             <div class="d-flex flex-wrap gap-1">
-                                @foreach (var benefit in item.Benefits)
+                                @foreach (var benefit in item.Benefits.Take(3))
                                 {
                                     <span class="badge rounded-pill bg-light text-dark border fw-normal">
-                                        <i class="bi bi-check2 text-teal me-1"></i>@benefit.Description
+                                        <i class="bi bi-check2 text-teal me-1" style="color: #20515d;"></i>@benefit.Description
                                     </span>
+                                }
+                                @if (item.Benefits.Count > 3)
+                                {
+                                    <span class="badge rounded-pill bg-light text-muted border fw-normal">+@(item.Benefits.Count - 3) more</span>
                                 }
                             </div>
                         </td>

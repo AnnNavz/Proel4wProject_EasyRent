@@ -1,8 +1,15 @@
-﻿@model Proel4wProject_EasyRent.Models.Vehicle
+@model Proel4wProject_EasyRent.Models.Vehicle
 
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Remove Vehicle";
+
+    string badgeBg = Model.Status switch
+    {
+        "Rented" => "bg-danger",
+        "Maintenance" => "bg-warning text-dark",
+        _ => "bg-success"
+    };
 }
 
 <div class="container-fluid text-center">
@@ -17,13 +24,26 @@
                     <p class="text-muted">Are you sure you want to remove <strong>@Model.ModelName</strong> from the fleet? This action cannot be undone.</p>
                 </div>
 
+                @* Vehicle Image *@
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <div class="mb-4">
+                        <img src="~/images/vehicles/@Model.ImagePath" alt="@Model.ModelName"
+                             style="max-height: 180px; border-radius: 12px; object-fit: cover;" />
+                    </div>
+                }
+
                 <div class="bg-light p-4 rounded-3 mb-4 text-start">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
                             <span class="small text-muted text-uppercase fw-bold">Vehicle Model</span>
                             <p class="mb-0 fw-bold">@Model.ModelName</p>
                         </div>
-                        <div class="col-6 text-end">
+                        <div class="col-4 text-center">
+                            <span class="small text-muted text-uppercase fw-bold">Status</span>
+                            <p class="mb-0"><span class="badge @badgeBg rounded-pill px-3 py-1">@Model.Status</span></p>
+                        </div>
+                        <div class="col-4 text-end">
                             <span class="small text-muted text-uppercase fw-bold">Daily Rate</span>
                             <p class="mb-0 fw-bold text-danger">₱ @Model.StartingPrice.ToString("N2")</p>
                         </div>

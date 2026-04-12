@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Proel4wProject_EasyRent.Data;
@@ -14,10 +14,12 @@ namespace Proel4wProject_EasyRent.Controllers
     public class VehiclesController : Controller
     {
         private readonly Proel4wProject_EasyRentContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public VehiclesController(Proel4wProject_EasyRentContext context)
+        public VehiclesController(Proel4wProject_EasyRentContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
 		// GET: Vehicles
@@ -43,9 +45,7 @@ namespace Proel4wProject_EasyRent.Controllers
 
 
 
-		// POST: Vehicles/Create
-		// To protect from overposting attacks, enable the specific properties you want to bind to.
-		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		// GET: Vehicles/Create
 		[HttpGet]
 		public IActionResult Create()
 		{
@@ -69,6 +69,23 @@ namespace Proel4wProject_EasyRent.Controllers
 		{
 			if (ModelState.IsValid)
 			{
+				// Handle image upload
+				if (vm.ImageFile != null && vm.ImageFile.Length > 0)
+				{
+					var uploadsDir = Path.Combine(_env.WebRootPath, "images", "vehicles");
+					Directory.CreateDirectory(uploadsDir);
+
+					var uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(vm.ImageFile.FileName);
+					var filePath = Path.Combine(uploadsDir, uniqueName);
+
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						await vm.ImageFile.CopyToAsync(stream);
+					}
+
+					vm.Vehicle.ImagePath = uniqueName;
+				}
+
 				// 1. Add the Vehicle object from the ViewModel to the Context
 				_context.Vehicle.Add(vm.Vehicle);
 
@@ -129,6 +146,43 @@ namespace Proel4wProject_EasyRent.Controllers
 			{
 				try
 				{
+					// Handle image upload
+					if (vm.ImageFile != null && vm.ImageFile.Length > 0)
+					{
+						var uploadsDir = Path.Combine(_env.WebRootPath, "images", "vehicles");
+						Directory.CreateDirectory(uploadsDir);
+
+						// Delete old image if exists
+						var existingVehicle = await _context.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == id);
+						if (existingVehicle != null && !string.IsNullOrEmpty(existingVehicle.ImagePath))
+						{
+							var oldPath = Path.Combine(uploadsDir, existingVehicle.ImagePath);
+							if (System.IO.File.Exists(oldPath))
+							{
+								System.IO.File.Delete(oldPath);
+							}
+						}
+
+						var uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(vm.ImageFile.FileName);
+						var filePath = Path.Combine(uploadsDir, uniqueName);
+
+						using (var stream = new FileStream(filePath, FileMode.Create))
+						{
+							await vm.ImageFile.CopyToAsync(stream);
+						}
+
+						vm.Vehicle.ImagePath = uniqueName;
+					}
+					else
+					{
+						// Keep the existing image path if no new file uploaded
+						var existingVehicle = await _context.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == id);
+						if (existingVehicle != null)
+						{
+							vm.Vehicle.ImagePath = existingVehicle.ImagePath;
+						}
+					}
+
 					_context.Update(vm.Vehicle);
 					await _context.SaveChangesAsync();
 
@@ -180,6 +234,16 @@ namespace Proel4wProject_EasyRent.Controllers
             var vehicle = await _context.Vehicle.FindAsync(id);
             if (vehicle != null)
             {
+                // Delete image file if exists
+                if (!string.IsNullOrEmpty(vehicle.ImagePath))
+                {
+                    var imagePath = Path.Combine(_env.WebRootPath, "images", "vehicles", vehicle.ImagePath);
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+                }
+
                 _context.Vehicle.Remove(vehicle);
             }
 

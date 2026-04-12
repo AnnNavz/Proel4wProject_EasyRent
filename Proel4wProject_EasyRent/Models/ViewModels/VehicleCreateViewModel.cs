@@ -1,4 +1,6 @@
-﻿namespace Proel4wProject_EasyRent.Models.ViewModels
+using Microsoft.AspNetCore.Http;
+
+namespace Proel4wProject_EasyRent.Models.ViewModels
 {
 	public class VehicleCreateViewModel
 	{
@@ -6,5 +8,8 @@
 
 		// This holds the benefits the user types in
 		public List<string> BenefitDescriptions { get; set; } = new List<string>();
+
+		// Image file upload
+		public IFormFile? ImageFile { get; set; }
 	}
 }
