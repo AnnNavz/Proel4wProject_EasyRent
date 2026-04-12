@@ -1,0 +1,61 @@
+@model Proel4wProject_EasyRent.Models.Users
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5 my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-body p-5">
+                    
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Message"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <h3 class="fw-bold mb-4" style="color: #20515d;">Profile Settings</h3>
+
+                    <form asp-action="UpdateProfile" asp-controller="Account" method="post" enctype="multipart/form-data">
+                        
+                        <div class="text-center mb-4">
+                            @{
+                                var avatarUrl = !string.IsNullOrEmpty(Model.ProfileImagePath) ? $"/images/profiles/{Model.ProfileImagePath}" : $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(Model.UserFirstName + " " + Model.UserLastName)}&background=20515d&color=fff";
+                            }
+                            <img src="@avatarUrl" class="rounded-circle shadow-sm mb-3" style="width: 120px; height: 120px; object-fit: cover;" id="profilePreview" alt="Profile Image" />
+                            <br />
+                            <label class="btn btn-sm btn-outline-secondary" style="border-radius: 20px;">
+                                Change Picture
+                                <input type="file" name="ProfileImage" accept="image/*" class="d-none" onchange="document.getElementById('profilePreview').src = window.URL.createObjectURL(this.files[0])">
+                            </label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted">First Name</label>
+                            <input type="text" name="UserFirstName" class="form-control form-control-lg" value="@Model.UserFirstName" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted">Last Name</label>
+                            <input type="text" name="UserLastName" class="form-control form-control-lg" value="@Model.UserLastName" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-muted">Email Address</label>
+                            <input type="email" name="UserEmail" class="form-control form-control-lg" value="@Model.UserEmail" required />
+                        </div>
+
+                        <button type="submit" class="btn w-100 py-3 fw-bold" style="background-color: #2D8191; color: white; border-radius: 12px; font-size: 1.1rem;">
+                            Save Changes
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,5 +11,8 @@ namespace Proel4wProject_EasyRent.Models.ViewModels
 
 		// Image file upload
 		public IFormFile? ImageFile { get; set; }
+
+		// Dynamic gallery files upload
+		public List<IFormFile> GalleryFiles { get; set; } = new List<IFormFile>();
 	}
 }

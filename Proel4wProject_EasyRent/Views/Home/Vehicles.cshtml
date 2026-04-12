@@ -1,4 +1,5 @@
 @model IEnumerable<Proel4wProject_EasyRent.Models.Vehicle>
+@inject Proel4wProject_EasyRent.Data.Proel4wProject_EasyRentContext _context
 
 @{
     ViewData["Title"] = "Vehicles";
@@ -6,6 +7,16 @@
     int totalPages = ViewBag.TotalPages ?? 1;
     int totalItems = ViewBag.TotalItems ?? 0;
     var vehicleTypes = ViewBag.VehicleTypes as List<string> ?? new List<string>();
+
+    var userId = Context.Session.GetInt32("UserId");
+    var savedVehicleIds = new List<int>();
+    if (userId != null)
+    {
+        savedVehicleIds = _context.SavedVehicles
+            .Where(s => s.UserId == userId)
+            .Select(s => s.VehicleId)
+            .ToList();
+    }
 }
 
 <style>
@@ -599,8 +610,11 @@
                                 <div class="status-badge @statusClass">@vehicle.Status</div>
 
                                 <!-- Wishlist Button -->
-                                <button class="wish-btn" title="Save to wishlist">
-                                    <i class="bi bi-bookmark" style="color: #64748b;"></i>
+                                @{
+                                    bool isSaved = savedVehicleIds.Contains(vehicle.VehicleId);
+                                }
+                                <button class="wish-btn vehicle-save-btn" data-id="@vehicle.VehicleId" title="@(isSaved ? "Remove from wishlist" : "Save to wishlist")">
+                                    <i class="bi @(isSaved ? "bi-heart-fill text-danger" : "bi-heart")" style="@(isSaved ? "" : "color: #64748b;")"></i>
                                 </button>
 
                                 <!-- Price Tag -->
@@ -638,8 +652,8 @@
                                     </div>
                                 }
 
-                                <a href="#" class="btn-rent">
-                                    Rent Now <i class="bi bi-arrow-right"></i>
+                                <a asp-action="VehicleDetails" asp-controller="Home" asp-route-id="@vehicle.VehicleId" class="btn-rent">
+                                    Vehicle Details <i class="bi bi-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
@@ -716,3 +730,33 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.vehicle-save-btn').click(function(e) {
+                e.preventDefault(); // Prevent accidental navigation if nested
+                var btn = $(this);
+                var icon = btn.find('i');
+                var vehicleId = btn.data('id');
+                
+                $.post('/Account/ToggleSavedVehicle', { vehicleId: vehicleId }, function(response) {
+                    if (response.success) {
+                        if (response.isSaved) {
+                            icon.removeClass('bi-heart').addClass('bi-heart-fill text-danger').css('color', '');
+                            btn.attr('title', 'Remove from wishlist');
+                        } else {
+                            icon.removeClass('bi-heart-fill text-danger').addClass('bi-heart').css('color', '#64748b');
+                            btn.attr('title', 'Save to wishlist');
+                        }
+                    } else {
+                        alert(response.message || "You must be logged in to save vehicles.");
+                        window.location.href = '/Account/LoginView';
+                    }
+                }).fail(function() {
+                    alert("Error communicating with server.");
+                });
+            });
+        });
+    </script>
+}

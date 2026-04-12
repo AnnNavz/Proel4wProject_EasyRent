@@ -21,16 +21,35 @@
 
             @* Image Upload Section *@
             <div class="mb-4">
-                <label class="form-label fw-bold small text-muted text-uppercase">Vehicle Image</label>
-                <div class="border rounded-3 p-4 text-center bg-light" style="border-style: dashed !important; cursor: pointer;" onclick="document.getElementById('imageUpload').click();">
+                <label class="form-label fw-bold small text-muted text-uppercase">Vehicle Main Image (Cover)</label>
+                <div class="border rounded-3 p-4 text-center bg-light mb-3" style="border-style: dashed !important; cursor: pointer;" onclick="document.getElementById('imageUpload').click();">
                     <div id="image-preview-area">
                         <i class="bi bi-cloud-arrow-up-fill text-muted" style="font-size: 2.5rem;"></i>
-                        <p class="text-muted small mb-0 mt-2">Click to upload a vehicle image</p>
-                        <p class="text-muted small mb-0">JPEG, PNG, WebP (Max 5MB)</p>
+                        <p class="text-muted small mb-0 mt-2">Click to upload main vehicle image</p>
                     </div>
                     <img id="image-preview" src="#" alt="Preview" style="display: none; max-height: 200px; border-radius: 12px; object-fit: cover;" />
                 </div>
-                <input type="file" name="ImageFile" id="imageUpload" accept="image/*" class="d-none" onchange="previewImage(this)" />
+                <input type="file" name="ImageFile" id="imageUpload" accept="image/*" class="d-none" onchange="previewImg(this, 'image-preview', 'image-preview-area')" />
+                
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label fw-bold small text-muted text-uppercase mb-0">Gallery Images (Minimum 4)</label>
+                    <button type="button" id="add-gallery-btn" class="btn btn-sm btn-outline-teal" style="border-color: #20515d; color: #20515d;">
+                        <i class="bi bi-plus-lg me-1"></i> Add More
+                    </button>
+                </div>
+                <div class="row g-2" id="gallery-container">
+                    @for (int i = 0; i < 4; i++)
+                    {
+                        var imgId = i + 2;
+                        <div class="col-md-3 col-6 gallery-block">
+                            <div class="border rounded-3 p-3 text-center bg-light h-100 d-flex flex-column justify-content-center align-items-center" style="border-style: dashed !important; cursor: pointer; min-height: 120px;" onclick="document.getElementById('imageUpload@(imgId)').click();">
+                                <div id="img-area-@(imgId)"><i class="bi bi-plus-lg text-muted"></i><div class="small text-muted mt-1">Image @imgId</div></div>
+                                <img id="img-prev-@(imgId)" src="#" alt="Preview" style="display: none; width: 100%; height: 80px; border-radius: 8px; object-fit: cover;" />
+                            </div>
+                            <input type="file" name="GalleryFiles" id="imageUpload@(imgId)" accept="image/*" class="d-none" onchange="previewImg(this, 'img-prev-@(imgId)', 'img-area-@(imgId)')" />
+                        </div>
+                    }
+                </div>
             </div>
 
             @* Side-by-Side: Model Name and Price *@
@@ -99,6 +118,45 @@
 
             <hr class="my-4 opacity-25">
 
+            @* Specifications Section *@
+            <h5 class="fw-bold mb-3" style="color: #20515d;">
+                <i class="bi bi-list-columns me-2 text-primary"></i>Vehicle Specifications
+            </h5>
+            
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Vehicle.BodyType" class="form-label fw-bold small text-muted text-uppercase">Body Type</label>
+                    <input asp-for="Vehicle.BodyType" class="form-control" placeholder="e.g. 7-Seater Midsize SUV" />
+                    <span asp-validation-for="Vehicle.BodyType" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Vehicle.Engine" class="form-label fw-bold small text-muted text-uppercase">Engine</label>
+                    <input asp-for="Vehicle.Engine" class="form-control" placeholder="e.g. 2.4L 4-cylinder Turbo Diesel" />
+                    <span asp-validation-for="Vehicle.Engine" class="text-danger small"></span>
+                </div>
+            </div>
+            
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Vehicle.Performance" class="form-label fw-bold small text-muted text-uppercase">Performance</label>
+                    <input asp-for="Vehicle.Performance" class="form-control" placeholder="e.g. 181 hp and 430 Nm of torque" />
+                    <span asp-validation-for="Vehicle.Performance" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Vehicle.Transmission" class="form-label fw-bold small text-muted text-uppercase">Transmission</label>
+                    <input asp-for="Vehicle.Transmission" class="form-control" placeholder="e.g. 8-speed Automatic" />
+                    <span asp-validation-for="Vehicle.Transmission" class="text-danger small"></span>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label asp-for="Vehicle.Variants" class="form-label fw-bold small text-muted text-uppercase">Variants</label>
+                <input asp-for="Vehicle.Variants" class="form-control" placeholder="e.g. Common trims include GLX, GLS..." />
+                <span asp-validation-for="Vehicle.Variants" class="text-danger small"></span>
+            </div>
+
+            <hr class="my-4 opacity-25">
+
             @* Dynamic Benefits Section *@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-bold mb-0" style="color: #20515d;">
@@ -139,14 +197,14 @@
     }
 
     <script>
-        // Image preview
-        function previewImage(input) {
+        // Image preview mapping
+        function previewImg(input, imgId, areaId) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    document.getElementById('image-preview').src = e.target.result;
-                    document.getElementById('image-preview').style.display = 'inline-block';
-                    document.getElementById('image-preview-area').style.display = 'none';
+                    document.getElementById(imgId).src = e.target.result;
+                    document.getElementById(imgId).style.display = 'inline-block';
+                    document.getElementById(areaId).style.display = 'none';
                 }
                 reader.readAsDataURL(input.files[0]);
             }
@@ -164,6 +222,24 @@
                     <i class="bi bi-check-circle-fill" style="color: #20515d;"></i>
                 </span>
                 <input name="BenefitDescriptions[${index}]" class="form-control border-start-0" placeholder="Add a benefit..." />
+            `;
+
+            container.appendChild(div);
+        });
+
+        // Script to handle adding more gallery input blocks dynamically
+        document.getElementById('add-gallery-btn').addEventListener('click', function () {
+            const container = document.getElementById('gallery-container');
+            const newIndex = container.children.length + 2; // Offset by 2 since image 1 is cover
+
+            const div = document.createElement('div');
+            div.className = 'col-md-3 col-6 gallery-block';
+            div.innerHTML = `
+                <div class="border rounded-3 p-3 text-center bg-light h-100 d-flex flex-column justify-content-center align-items-center" style="border-style: dashed !important; cursor: pointer; min-height: 120px;" onclick="document.getElementById('imageUpload${newIndex}').click();">
+                    <div id="img-area-${newIndex}"><i class="bi bi-plus-lg text-muted"></i><div class="small text-muted mt-1">Image ${newIndex}</div></div>
+                    <img id="img-prev-${newIndex}" src="#" alt="Preview" style="display: none; width: 100%; height: 80px; border-radius: 8px; object-fit: cover;" />
+                </div>
+                <input type="file" name="GalleryFiles" id="imageUpload${newIndex}" accept="image/*" class="d-none" onchange="previewImg(this, 'img-prev-${newIndex}', 'img-area-${newIndex}')" />
             `;
 
             container.appendChild(div);

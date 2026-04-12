@@ -276,6 +276,49 @@
                     color: #ffffff;
                     text-decoration: underline;
                 }
+
+        /* Profile Dropdown Animation */
+        .profile-dropdown-menu {
+            display: block;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            margin-top: 10px !important;
+        }
+
+        .dropdown:hover .profile-dropdown-menu,
+        .profile-dropdown-menu.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .profile-img-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        
+        .dropdown:hover .profile-img-btn {
+            border-color: #2D8191;
+            transform: scale(1.05);
+        }
+        
+        .dropdown-item {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body>
@@ -290,8 +333,12 @@
             </div>
 
             <nav class="nav-links">
-                <a asp-controller="Home" asp-action="Index" class="nav-item active">Home</a>
-                <a asp-controller="Home" asp-action="Vehicles" class="nav-item">Vehicles</a>
+                @{
+                    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+                    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+                }
+                <a asp-controller="Home" asp-action="Index" class="nav-item @(currentAction == "Index" && currentController == "Home" ? "active" : "")">Home</a>
+                <a asp-controller="Home" asp-action="Vehicles" class="nav-item @((currentAction == "Vehicles" || currentAction == "VehicleDetails") && currentController == "Home" ? "active" : "")">Vehicles</a>
                 <a href="#" class="nav-item">Contacts</a>
                 <a href="#" class="nav-item">About Us</a>
             </nav>
@@ -301,10 +348,29 @@
                     <i class="fa-solid fa-phone phone-icon"></i>
                     <span>+639194594264</span>
                 </div>
-                <a class="btn-signin" asp-controller="Account" asp-action="LoginView">
-                    <i class="fa-solid fa-right-to-bracket"></i> Sign Out
-                </a>
-                <button class="btn-book">Book Now</button>
+                
+                <div class="dropdown position-relative ms-2">
+                    <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                        @{
+                            var userName = Context.Session.GetString("UserName") ?? "Guest User";
+                            var userImage = Context.Session.GetString("UserProfileImage");
+                            var avatarUrl = !string.IsNullOrEmpty(userImage) ? $"/images/profiles/{userImage}" : $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(userName)}&background=20515d&color=fff";
+                        }
+                        <span class="fw-semibold text-dark" style="font-family: 'Inter', sans-serif; font-size: 0.95rem;">@userName</span>
+                        <img src="@avatarUrl" class="profile-img-btn" alt="Profile">
+                    </div>
+                    
+                    <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu shadow border-0" style="border-radius: 12px; min-width: 200px; padding: 10px 0;">
+                        <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" asp-controller="Account" asp-action="Profile"><i class="bi bi-person-circle text-muted fs-5"></i> See Profile</a></li>
+                        <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" asp-controller="Home" asp-action="MyBookings"><i class="bi bi-calendar-check-fill text-muted fs-5"></i> Bookings</a></li>
+                        <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" asp-controller="Account" asp-action="SavedVehicles"><i class="bi bi-heart-fill text-muted fs-5"></i> Saved Vehicles</a></li>
+                        <li><hr class="dropdown-divider mb-1 mt-1 opacity-10"></li>
+                        <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" asp-controller="Home" asp-action="Terms"><i class="bi bi-file-earmark-text-fill text-muted fs-5"></i> Terms of Service</a></li>
+                        <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2" asp-controller="Home" asp-action="Privacy"><i class="bi bi-shield-lock-fill text-muted fs-5"></i> Privacy and Policy</a></li>
+                        <li><hr class="dropdown-divider mb-1 mt-1 opacity-10"></li>
+                        <li><a class="dropdown-item py-2 px-3 d-flex align-items-center gap-2 text-danger" asp-controller="Account" asp-action="LoginView"><i class="bi bi-box-arrow-right text-danger fs-5"></i> Sign Out</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </header>
@@ -363,6 +429,13 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

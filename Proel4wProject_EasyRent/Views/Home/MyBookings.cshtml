@@ -1,0 +1,133 @@
+@model IEnumerable<Proel4wProject_EasyRent.Models.Reservation>
+
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<style>
+    body { background-color: #f3f4f6; font-family: 'Inter', sans-serif; }
+    
+    .booking-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .booking-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .status-pending { background-color: #fef9c3; color: #854d0e; border: 1px solid #fef08a;}
+    .status-confirmed { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0;}
+    .status-completed { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;}
+    .status-rejected { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+
+    .vehicle-title { font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 700; color: #1f2937; margin-bottom: 4px; }
+    .vehicle-type { font-size: 0.85rem; color: #6b7280; font-weight: 500; }
+    
+    .detail-group { margin-top: 16px; }
+    .detail-label { font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600; margin-bottom: 2px;}
+    .detail-val { font-size: 0.95rem; color: #111827; font-weight: 500; }
+</style>
+
+<div class="container py-5">
+    <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+        <i class="bi bi-calendar-check-fill text-muted fs-3 me-3"></i>
+        <h2 class="mb-0 fw-bold" style="font-family: 'Montserrat', sans-serif; color: #20515d;">My Bookings Timeline</h2>
+    </div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <p class="text-muted mb-4">Track the statuses, updates, and communications of all your vehicle reservations here.</p>
+            
+            @if(!Model.Any())
+            {
+                <div class="text-center py-5" style="background: white; border-radius: 12px; border: 1px dashed #d1d5db;">
+                    <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3 text-secondary">No Bookings Found</h5>
+                    <p class="text-muted">You haven't reserved any vehicles yet. When you do, they will appear here!</p>
+                    <a asp-action="Vehicles" class="btn mt-2 px-4" style="background-color: #20515d; color: white; border-radius: 20px;">Browse Vehicles</a>
+                </div>
+            }
+            else
+            {
+                foreach(var booking in Model)
+                {
+                    <div class="booking-card shadow-sm">
+                        <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+                            <div>
+                                <div class="vehicle-title">@booking.Vehicle?.ModelName</div>
+                                <div class="vehicle-type">@booking.Vehicle?.VehicleType • Res #@booking.ReservationId.ToString("00000")</div>
+                            </div>
+                            <div>
+                                @{
+                                    string badgeClass = "status-pending"; // Default
+                                    if(booking.Status.ToLower().Contains("confirm")) badgeClass = "status-confirmed";
+                                    else if(booking.Status.ToLower().Contains("complet") || booking.Status.ToLower().Contains("return")) badgeClass = "status-completed";
+                                    else if(booking.Status.ToLower().Contains("reject") || booking.Status.ToLower().Contains("cancel")) badgeClass = "status-rejected";
+                                }
+                                <span class="status-badge @badgeClass"><i class="bi bi-record-circle-fill me-1" style="font-size: 0.7rem;"></i> @booking.Status</span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4 detail-group mt-0">
+                                <div class="detail-label">Pickup Date</div>
+                                <div class="detail-val">@booking.PickupDate.ToString("MMM dd, yyyy") <span class="text-muted" style="font-size: 0.8rem;">@(new DateTime().Add(booking.PickupTime).ToString("hh:mm tt"))</span></div>
+                            </div>
+                            <div class="col-md-4 detail-group mt-0">
+                                <div class="detail-label">Return Date</div>
+                                <div class="detail-val">@booking.ReturnDate.ToString("MMM dd, yyyy") <span class="text-muted" style="font-size: 0.8rem;">@(new DateTime().Add(booking.ReturnTime).ToString("hh:mm tt"))</span></div>
+                            </div>
+                            <div class="col-md-4 detail-group mt-0">
+                                <div class="detail-label">Total Cost</div>
+                                <div class="detail-val text-success fw-bold">₱ @booking.FinalTotalCost.ToString("N2")</div>
+                            </div>
+                            
+                            <div class="col-md-4 detail-group">
+                                <div class="detail-label">Payment</div>
+                                <div class="detail-val">@booking.PaymentMethod</div>
+                            </div>
+                            <div class="col-md-4 detail-group">
+                                <div class="detail-label">Usage</div>
+                                <div class="detail-val">@booking.UsageType</div>
+                            </div>
+                            <div class="col-md-4 detail-group text-end">
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill mt-2">View Full Details</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="p-4" style="background: white; border-radius: 12px; border: 1px solid #e5e7eb;">
+                <h5 style="font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 700; color: #111827;"><i class="bi bi-bell-fill text-warning me-2"></i> Communications & Updates</h5>
+                <hr>
+                <div class="text-muted" style="font-size: 0.85rem; line-height: 1.6;">
+                    When Admin staff verify your payments or update your reservation constraints, direct messages and status alerts will populate here. Currently, your account is verified and well-standing.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

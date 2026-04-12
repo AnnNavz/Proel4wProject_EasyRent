@@ -1,0 +1,67 @@
+@model IEnumerable<Proel4wProject_EasyRent.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Reservation Management";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // Ensure this matches existing admin layout
+}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Recent Reservations</h6>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-dark">
+                        <th scope="col">ID</th>
+                        <th scope="col">Date Logged</th>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Vehicle</th>
+                        <th scope="col">Usage</th>
+                        <th scope="col">Total Fee</th>
+                        <th scope="col">Payment</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(!Model.Any())
+                    {
+                        <tr><td colspan="9" class="text-center">No reservations found in database.</td></tr>
+                    }
+                    else
+                    {
+                        foreach(var item in Model)
+                        {
+                            <tr>
+                                <td>@item.ReservationId.ToString("00000")</td>
+                                <td>@item.DateCreated.ToString("MMM dd, yy")</td>
+                                <td>@item.LastName, @item.FirstName</td>
+                                <td>@item.Vehicle?.ModelName (@item.Vehicle?.VehicleType)</td>
+                                <td>@item.UsageType</td>
+                                <td class="fw-bold text-success">₱@item.FinalTotalCost.ToString("N2")</td>
+                                <td>
+                                    <div>@item.PaymentMethod</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">Ref: @item.PaymentReferenceNumber</div>
+                                </td>
+                                <td>
+                                    @{
+                                        string alert = item.Status.Contains("Pending") ? "text-warning" : 
+                                                       item.Status.Contains("Confirm") ? "text-success" : 
+                                                       item.Status.Contains("Reject") ? "text-danger" : "text-primary";
+                                    }
+                                    <span class="fw-bold @alert">@item.Status</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary">Details</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

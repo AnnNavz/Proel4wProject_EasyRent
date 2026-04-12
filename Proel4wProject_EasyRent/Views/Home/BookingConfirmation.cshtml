@@ -1,0 +1,200 @@
+@model Proel4wProject_EasyRent.Models.ReservationSessionModel
+
+@{
+    ViewData["Title"] = "Booking Confirmation";
+}
+
+<style>
+    body { background-color: #ffffff; font-family: 'Inter', sans-serif; }
+    
+    .stepper-container { margin: 40px auto 30px; width: 80%; }
+    .stepper-wrapper { display: flex; justify-content: space-between; align-items: center; position: relative; }
+    .stepper-line-bg { position: absolute; top: 20px; left: 0; width: 100%; height: 3px; background-color: #e5e7eb; z-index: 1; }
+    .stepper-line-fill {
+        position: absolute; top: 20px; left: 0; height: 3px; background-color: #20515d; z-index: 2;
+        width: 75%;
+        animation: fillProgress4 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.5s;
+    }
+
+    @@keyframes fillProgress4 {
+        from { width: 75%; }
+        to { width: 100%; }
+    }
+
+    .stepper-item { position: relative; z-index: 3; text-align: center; display: flex; flex-direction: column; align-items: center; background-color: #ffffff; padding: 0 10px; }
+    .stepper-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e5e7eb; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-bottom: 8px; transition: all 0.5s; }
+    
+    .stepper-item.completed .stepper-circle { background-color: #20515d; }
+    .stepper-item.completed .stepper-label, .stepper-item.active .stepper-label { color: #6b7280; font-weight: 500; }
+    .stepper-label { font-size: 0.8rem; color: #9ca3af; transition: color 0.5s; }
+    
+    .stepper-item.active .stepper-circle {
+        background-color: #20515d;
+        animation: pulseglow 2s infinite;
+    }
+
+    @@keyframes pulseglow {
+        0% { box-shadow: 0 0 0 0 rgba(32, 81, 93, 0.5); }
+        70% { box-shadow: 0 0 0 15px rgba(32, 81, 93, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(32, 81, 93, 0); }
+    }
+
+    /* Container blocks */
+    .summary-card { 
+        border: 1px solid #e5e7eb; 
+        border-radius: 12px; 
+        overflow: hidden; 
+        display: flex; 
+        margin-bottom: 50px;
+    }
+    
+    /* Left Panel */
+    .left-panel { background-color: #2a707a; color: white; padding: 40px; width: 35%; display: flex; flex-direction: column; justify-content: space-between; }
+    .left-panel h3 { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.25rem; margin-bottom: 15px; }
+    .left-panel p { font-size: 0.85rem; line-height: 1.6; opacity: 0.9; margin-bottom: 20px;}
+    .left-panel .divider { border-top: 1px solid rgba(255,255,255,0.3); margin: 20px 0; }
+
+    /* Right Panel */
+    .right-panel { background-color: #ffffff; padding: 40px; width: 65%; }
+    .section-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: #111827; text-align: center; margin-bottom: 24px; }
+    
+    .data-row { display: flex; margin-bottom: 12px; font-size: 0.85rem; }
+    .data-row .data-label { width: 40%; font-weight: 600; color: #111827; }
+    .data-row .data-value { width: 60%; color: #4b5563; }
+
+    .btn-edit { background: white; color: #20515d; border: 1px solid #e5e7eb; padding: 12px 40px; border-radius: 8px; font-weight: 600; text-decoration: none; text-align: center; display: inline-block;}
+    .btn-submit { background: #20515d; color: white; border: none; padding: 12px 40px; border-radius: 8px; font-weight: 600; }
+</style>
+
+<div class="container py-4">
+
+    @* Stepper *@
+    <div class="stepper-container">
+        <div class="stepper-wrapper">
+            <div class="stepper-line-bg"></div>
+            <div class="stepper-line-fill"></div>
+            
+            <div class="stepper-item completed"><div class="stepper-circle">1</div><div class="stepper-label">Vehicle Details</div></div>
+            <div class="stepper-item completed"><div class="stepper-circle">2</div><div class="stepper-label">Reservation Details</div></div>
+            <div class="stepper-item completed"><div class="stepper-circle">3</div><div class="stepper-label">Payment Details</div></div>
+            <div class="stepper-item completed"><div class="stepper-circle">4</div><div class="stepper-label">Payment Confirmation</div></div>
+            <div class="stepper-item active"><div class="stepper-circle">5</div><div class="stepper-label">Booking Confirmation</div></div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="summary-card shadow-sm">
+                
+                @* Left Teal Panel *@
+                <div class="left-panel">
+                    <div>
+                        <h3>Booking Confirmation</h3>
+                        <p>Please take a moment to review your booking summary below before finalizing. Ensure all reservation details, vehicle selection, and payment information are correct.</p>
+                        
+                        <div class="divider"></div>
+
+                        <h3 style="font-size: 0.95rem;">What happens after you confirm?</h3>
+                        <p>Once you click 'Submit', your details will be submitted to our management for review. Please wait for staff approval as we verify your reservation and payment. You will receive a notification once your booking is officially confirmed and ready for pickup.</p>
+                        
+                        <div class="divider"></div>
+
+                        <h3 style="font-size: 0.95rem; color: #fde047;">Important Note</h3>
+                        <p style="color: #fef08a;">You will only have exactly 1 hour to modify your information after submission, or else this will be confirmed for booking. Please review correctly!</p>
+                    </div>
+
+                    <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 40px;">
+                        All data provided is protected by secure encryption. We guarantee that your personal information is used exclusively for your vehicle rental and is safe from any unauthorized access or misuse by management.<br><br>
+                        All rights reserved 2026
+                    </div>
+                </div>
+
+                @* Right Content Panel *@
+                <div class="right-panel">
+                    
+                    <div class="section-title">Reservation Summary</div>
+                    
+                    <div class="data-row"><div class="data-label">Customer's Name:</div><div class="data-value">@Model.LastName, @Model.FirstName</div></div>
+                    <div class="data-row"><div class="data-label">Phone Number:</div><div class="data-value">+63 @Model.PhoneNumber</div></div>
+                    <div class="data-row"><div class="data-label">Email Address:</div><div class="data-value">@Model.EmailAddress</div></div>
+                    <div class="data-row"><div class="data-label">Vehicle Type:</div><div class="data-value">@Model.VehicleName (@Model.VehicleType)</div></div>
+                    <div class="data-row"><div class="data-label">Passenger Capacity:</div><div class="data-value">@Model.PassengerCapacity passengers</div></div>
+                    <div class="data-row"><div class="data-label">Pickup Date:</div><div class="data-value">@Model.PickupDate.ToString("MMMM dd, yyyy")</div></div>
+                    <div class="data-row"><div class="data-label">Time Reserved:</div><div class="data-value">@(new DateTime().Add(Model.PickupTime).ToString("hh:mm tt"))</div></div>
+                    <div class="data-row"><div class="data-label">Date Ended:</div><div class="data-value">@Model.ReturnDate.ToString("MMMM dd, yyyy")</div></div>
+                    <div class="data-row"><div class="data-label">Time Released:</div><div class="data-value">@(new DateTime().Add(Model.ReturnTime).ToString("hh:mm tt"))</div></div>
+                    <div class="data-row"><div class="data-label">Time Accumulated:</div><div class="data-value">@Model.TimeAccumulatedDisplay</div></div>
+                    <div class="data-row"><div class="data-label">Usage Type:</div><div class="data-value">@Model.UsageType</div></div>
+                    <div class="data-row"><div class="data-label">Pickup Address:</div><div class="data-value">@Model.PickupAddress</div></div>
+                    <div class="data-row"><div class="data-label">Destination Address:</div><div class="data-value">@Model.DestinationAddress</div></div>
+
+                    <div class="section-title mt-5">Payment Summary</div>
+
+                    <div class="data-row"><div class="data-label">Total partial fees:</div><div class="data-value">₱ @Model.TotalPartialFees.ToString("N2")</div></div>
+                    
+                    @if(Model.SucceedingFee > 0)
+                    {
+                        <div class="data-row"><div class="data-label">Succeeding fee:</div><div class="data-value">+₱ @Model.SucceedingFee.ToString("N2")</div></div>
+                    }
+
+                    <div class="data-row"><div class="data-label">5% downpayment:</div><div class="data-value">-₱ @Model.Downpayment.ToString("N2")</div></div>
+                    <div class="data-row"><div class="data-label" style="color: #111827;">Total fee to be paid:</div><div class="data-value fw-bold" style="color: #20515d;">₱ @Model.TotalFeeToBePaid.ToString("N2")</div></div>
+                    <div class="data-row mt-3"><div class="data-label">Payment Method:</div><div class="data-value">@Model.PaymentMethod</div></div>
+                    <div class="data-row"><div class="data-label">Account Name:</div><div class="data-value">@Model.AccountName</div></div>
+                    <div class="data-row"><div class="data-label">Reference Number:</div><div class="data-value">@Model.ReferenceNumber</div></div>
+                    <div class="data-row"><div class="data-label">Total Amount sent:</div><div class="data-value">₱ @Model.AmountSent.ToString("N2")</div></div>
+
+                    <div class="d-flex justify-content-between mt-5 pt-3">
+                        <a href="@Url.Action("ReservationDetails", "Home", new { id = Model.VehicleId })" class="btn btn-edit shadow-sm" style="width: 45%;">Edit</a>
+                        
+                        <form method="post" asp-action="FinalizeBooking" asp-controller="Home" style="width: 45%; margin: 0;">
+                            <button type="button" id="btnBroomBroom" class="btn btn-submit shadow-sm w-100">Submit</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Broom Broom Modal *@
+<div class="modal fade" id="broomModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; overflow: hidden;">
+            <div class="modal-header" style="background-color: #20515d; color: white;">
+                <h5 class="modal-title fw-bold">Are you ready to broom broom?</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-car-front-fill mb-3" style="font-size: 3rem; color: #20515d;"></i>
+                <h5 class="fw-bold text-dark mb-3">Confirm Your Booking!</h5>
+                <p class="text-muted mb-0">By clicking confirm, this will be saved to our Admin system. You will receive an alert once accepted by the staff!</p>
+            </div>
+            <div class="modal-footer bg-light border-0 d-flex justify-content-center gap-3 pb-4">
+                <button type="button" class="btn btn-edit px-4" data-bs-dismiss="modal">Go Back</button>
+                <button type="button" class="btn btn-submit px-4" id="btnFinalCommit">Yes, Book it!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#btnBroomBroom').click(function() {
+                var myModal = new bootstrap.Modal(document.getElementById('broomModal'));
+                myModal.show();
+            });
+
+            $('#btnFinalCommit').click(function() {
+                var btn = $(this);
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...');
+                
+                // Submit the parent form containing the real finalize action
+                $('#btnBroomBroom').closest('form').submit();
+            });
+        });
+    </script>
+}

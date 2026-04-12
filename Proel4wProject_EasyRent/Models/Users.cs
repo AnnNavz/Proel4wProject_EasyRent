@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Proel4wProject_EasyRent.Models
@@ -40,6 +40,8 @@ namespace Proel4wProject_EasyRent.Models
 
         [ForeignKey("RoleId")]
         public Role? Role { get; set; }
+
+        public string? ProfileImagePath { get; set; }
 
     }
 }

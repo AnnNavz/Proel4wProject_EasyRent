@@ -1,0 +1,433 @@
+@model Proel4wProject_EasyRent.Models.Vehicle
+
+@{
+    ViewData["Title"] = "Reservation Details";
+    var userFirstName = ViewBag.UserFirstName as string ?? "";
+    var userLastName = ViewBag.UserLastName as string ?? "";
+    var userEmail = ViewBag.UserEmail as string ?? "";
+}
+
+<style>
+    body {
+        background-color: #ffffff; 
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Stepper Styling with Animations */
+    .stepper-container {
+        margin: 40px auto 60px;
+        width: 80%;
+    }
+
+    .stepper-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+
+    .stepper-line-bg {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: #e5e7eb;
+        z-index: 1;
+    }
+    
+    .stepper-line-fill {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        height: 3px;
+        background-color: #20515d;
+        z-index: 2;
+        /* Animation from 0% width to 25% width (Step 1 to 2) */
+        width: 0%;
+        animation: fillProgress 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.5s;
+    }
+
+    @@keyframes fillProgress {
+        to { width: 25%; } /* Step 1 to Step 2 */
+    }
+
+    .stepper-item {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 0 10px;
+    }
+
+    .stepper-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e5e7eb;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        margin-bottom: 8px;
+        transition: all 0.5s;
+    }
+
+    .stepper-item.completed .stepper-circle {
+        background-color: #20515d;
+    }
+
+    .stepper-item.active .stepper-circle {
+        background-color: #20515d;
+        /* Pulse Animation */
+        animation: pulseglow 2s infinite;
+    }
+
+    @@keyframes pulseglow {
+        0% { box-shadow: 0 0 0 0 rgba(32, 81, 93, 0.5); }
+        70% { box-shadow: 0 0 0 15px rgba(32, 81, 93, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(32, 81, 93, 0); }
+    }
+
+    .stepper-label {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        transition: color 0.5s;
+    }
+
+    .stepper-item.completed .stepper-label,
+    .stepper-item.active .stepper-label {
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    /* Form Container */
+    .form-box {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 24px 32px;
+        margin-bottom: 24px;
+        background: white;
+    }
+
+    .form-section-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #111827;
+        margin-bottom: 20px;
+    }
+
+    /* Input Styles matching design */
+    .form-group label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #20515d; 
+        margin-bottom: 6px;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        color: #374151;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #20515d;
+        box-shadow: 0 0 0 0.2rem rgba(32, 81, 93, 0.1);
+    }
+    
+    /* Validation Blink Animation */
+    .input-error-blink {
+        border-color: #ef4444 !important;
+        animation: blinkRed 1s infinite;
+    }
+
+    @@keyframes blinkRed {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+        50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    
+
+        position: absolute;
+        right: 12px;
+        top: 36px;
+        font-size: 1.1rem;
+    }
+    
+    .text-success-icon { color: #22c55e; }
+    .text-error-icon { color: #ef4444; }
+
+    /* Buttons */
+    .btn-back {
+        background: white;
+        color: #20515d;
+        border: 1px solid #e5e7eb;
+        padding: 12px 40px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-back:hover {
+        background: #f3f4f6;
+    }
+
+    .btn-confirm {
+        background: #20515d;
+        color: white;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-confirm:hover {
+        background: #1a424c;
+        transform: translateY(-1px);
+    }
+
+    .phone-group {
+        display: flex;
+        gap: 10px;
+    }
+    .phone-code {
+        width: 100px;
+        background: #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #374151;
+        gap: 8px;
+    }
+    .phone-code img { width: 20px; }
+
+</style>
+
+<div class="container py-4">
+
+    @* Animated Stepper *@
+    <div class="stepper-container">
+        <div class="stepper-wrapper">
+            <div class="stepper-line-bg"></div>
+            <div class="stepper-line-fill"></div>
+            
+            <div class="stepper-item completed">
+                <div class="stepper-circle">1</div>
+                <div class="stepper-label">Vehicle Details</div>
+            </div>
+            <div class="stepper-item active">
+                <div class="stepper-circle">2</div>
+                <div class="stepper-label">Reservation Details</div>
+            </div>
+            <div class="stepper-item">
+                <div class="stepper-circle">3</div>
+                <div class="stepper-label">Payment Details</div>
+            </div>
+            <div class="stepper-item">
+                <div class="stepper-circle">4</div>
+                <div class="stepper-label">Payment Confirmation</div>
+            </div>
+            <div class="stepper-item">
+                <div class="stepper-circle">5</div>
+                <div class="stepper-label">Booking Confirmation</div>
+            </div>
+        </div>
+    </div>
+
+    @* Main Form Area *@
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="p-4" style="border: 1px solid #e5e7eb; border-radius: 16px; background: #fafafa;">
+                
+                <form id="reservationForm" method="post" asp-action="SubmitReservationDetails" asp-controller="Home">
+                    <input type="hidden" name="VehicleId" value="@Model.VehicleId" />
+
+                    @* Contact Details *@
+                    <div class="form-box shadow-sm">
+                        <div class="form-section-title">Contact Details</div>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6 form-group">
+                                <label>Last Name</label>
+                                <input type="text" name="LastName" class="form-control" value="@userLastName" placeholder="Enter last name" required />
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>First Name</label>
+                                <input type="text" name="FirstName" class="form-control" value="@userFirstName" placeholder="Enter first name" required />
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6 form-group">
+                                <label>Phone Number</label>
+                                <div class="phone-group">
+                                    <div class="phone-code">
+                                        <img src="https://flagcdn.com/w40/ph.png" alt="PH"> +63
+                                    </div>
+                                    <input type="text" name="PhoneNumber" class="form-control" placeholder="9xxxxxxxxx" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Email Address</label>
+                                <input type="email" name="EmailAddress" class="form-control" value="@userEmail" placeholder="Enter email address" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Rental Details *@
+                    <div class="form-box shadow-sm">
+                        <div class="form-section-title">Rental Details</div>
+                        <div class="row g-3">
+                            <div class="col-md-12 form-group">
+                                <label>Passenger Capacity</label>
+                                <select name="PassengerCapacity" class="form-select" required>
+                                    <option value="">Select total capacity</option>
+                                    <option value="4">4 Passengers</option>
+                                    <option value="6">6 Passengers</option>
+                                    <option value="7">7 Passengers</option>
+                                    <option value="8">8+ Passengers</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Time and Date of Reservation *@
+                    <div class="form-box shadow-sm">
+                        <div class="form-section-title">Time and Date of Reservation</div>
+                        <div class="row g-3">
+                            <div class="col-md-3 form-group">
+                                <label>Pickup Date</label>
+                                <input type="date" name="PickupDate" class="form-control text-muted" required />
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Time Reserved</label>
+                                <input type="time" name="PickupTime" class="form-control text-muted" required />
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Date Ended</label>
+                                <input type="date" name="ReturnDate" class="form-control text-muted" required />
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Time Released</label>
+                                <input type="time" name="ReturnTime" class="form-control text-muted" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Address and Destination *@
+                    <div class="form-box shadow-sm mb-0">
+                        <div class="form-section-title">Address and Destination</div>
+                        <div class="row g-3">
+                            <div class="col-md-4 form-group position-relative">
+                                <label>Usage Type</label>
+                                <div class="d-flex align-items-center">
+                                    <select name="UsageType" class="form-select me-2" required>
+                                        <option value="">Select usage type</option>
+                                        <option value="Personal Use">Personal Use</option>
+                                        <option value="Company Use">Company Use</option>
+                                    </select>
+                                    <i class="bi bi-info-circle fs-5" style="color: #4b5563; cursor: help;" data-bs-toggle="tooltip" data-bs-placement="top" title="Please note that payment for the usage type has a different total rental fees. For personal use, a renter will receive 5% downpayment upon reservation, and company use will receive total payments without no additional fees."></i>
+                                </div>
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>Pickup Address</label>
+                                <input type="text" name="PickupAddress" class="form-control" placeholder="Enter the pickup address" required />
+                            </div>
+                            <div class="col-md-4 form-group">
+                                <label>Destination Address</label>
+                                <input type="text" name="DestinationAddress" class="form-control" placeholder="Enter the destination address" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    @* Footer Actions *@
+                    <div class="d-flex justify-content-center gap-4 mt-5">
+                        <a asp-action="VehicleDetails" asp-route-id="@Model.VehicleId" class="btn btn-back shadow-sm px-5">Back</a>
+                        <button type="button" id="btnConfirmDetails" class="btn btn-confirm shadow-sm px-5">Confirm Details</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Error Recovery / Confirmation Modal *@
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; overflow: hidden;">
+            <div class="modal-header" style="background-color: #20515d; color: white;">
+                <h5 class="modal-title fw-bold"><i class="bi bi-shield-check me-2"></i> Confirm Your Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-exclamation-circle text-warning mb-3" style="font-size: 3rem;"></i>
+                <h5 class="fw-bold text-dark mb-3">Proceed with Reservation?</h5>
+                <p class="text-muted mb-0">Please ensure all your contact details, dates, and addresses are correct before proceeding to the payment step. You can still modify them by clicking Go Back.</p>
+            </div>
+            <div class="modal-footer bg-light border-0 d-flex justify-content-center gap-3 pb-4">
+                <button type="button" class="btn btn-back px-4" data-bs-dismiss="modal">Go Back</button>
+                <button type="button" class="btn btn-confirm px-4" id="btnFinalSubmit">Proceed to Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Validation intercept for confirm button
+            $('#btnConfirmDetails').click(function() {
+                var isValid = true;
+                
+                // Reset states
+                $('.input-error-blink').removeClass('input-error-blink');
+
+                // Check all required fields in the form
+                $('#reservationForm').find('input[required], select[required]').each(function() {
+                    if (!$(this).val() || $(this).val().trim() === "") {
+                        isValid = false;
+                        $(this).addClass('input-error-blink');
+                    }
+                });
+
+                if (isValid) {
+                    var myModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                    myModal.show();
+                } else {
+                    // Scroll to first error
+                    var firstError = $('.input-error-blink').first();
+                    $('html, body').animate({
+                        scrollTop: firstError.offset().top - 150
+                    }, 500);
+                }
+            });
+
+            // Remove blink animation immediately when user interacts with field
+            $('input, select').on('input change', function() {
+                $(this).removeClass('input-error-blink');
+            });
+
+            // Final Submit logic
+            $('#btnFinalSubmit').click(function() {
+                var btn = $(this);
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...');
+                
+                $('#reservationForm').submit();
+            });
+        });
+    </script>
+}

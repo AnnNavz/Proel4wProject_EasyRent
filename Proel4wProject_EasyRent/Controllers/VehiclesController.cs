@@ -35,7 +35,8 @@ namespace Proel4wProject_EasyRent.Controllers
 			if (id == null) return NotFound();
 
 			var vehicle = await _context.Vehicle
-				.Include(v => v.Benefits) // Load the benefits here too
+				.Include(v => v.Benefits)
+				.Include(v => v.GalleryImages)
 				.FirstOrDefaultAsync(m => m.VehicleId == id);
 
 			if (vehicle == null) return NotFound();
@@ -69,28 +70,32 @@ namespace Proel4wProject_EasyRent.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				// Handle image upload
-				if (vm.ImageFile != null && vm.ImageFile.Length > 0)
-				{
-					var uploadsDir = Path.Combine(_env.WebRootPath, "images", "vehicles");
-					Directory.CreateDirectory(uploadsDir);
-
-					var uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(vm.ImageFile.FileName);
-					var filePath = Path.Combine(uploadsDir, uniqueName);
-
-					using (var stream = new FileStream(filePath, FileMode.Create))
-					{
-						await vm.ImageFile.CopyToAsync(stream);
-					}
-
-					vm.Vehicle.ImagePath = uniqueName;
-				}
+				vm.Vehicle.ImagePath = await SaveImageAsync(vm.ImageFile);
+				vm.Vehicle.ImagePath = await SaveImageAsync(vm.ImageFile);
 
 				// 1. Add the Vehicle object from the ViewModel to the Context
 				_context.Vehicle.Add(vm.Vehicle);
 
 				// 2. Save changes to the database to generate the VehicleId
 				await _context.SaveChangesAsync();
+
+				// Process dynamic gallery files
+				if (vm.GalleryFiles != null && vm.GalleryFiles.Any())
+				{
+					foreach (var file in vm.GalleryFiles)
+					{
+						var savedPath = await SaveImageAsync(file);
+						if (!string.IsNullOrEmpty(savedPath))
+						{
+							_context.VehicleImage.Add(new VehicleImage
+							{
+								VehicleId = vm.Vehicle.VehicleId,
+								ImagePath = savedPath
+							});
+						}
+					}
+					await _context.SaveChangesAsync();
+				}
 
 				// 3. Map each string in the BenefitDescriptions list to the VehicleBenefit model
 				if (vm.BenefitDescriptions != null)
@@ -120,6 +125,7 @@ namespace Proel4wProject_EasyRent.Controllers
 
 			var vehicle = await _context.Vehicle
 				.Include(v => v.Benefits)
+				.Include(v => v.GalleryImages)
 				.FirstOrDefaultAsync(m => m.VehicleId == id);
 
 			if (vehicle == null) return NotFound();
@@ -146,40 +152,38 @@ namespace Proel4wProject_EasyRent.Controllers
 			{
 				try
 				{
-					// Handle image upload
+					var existingVehicle = await _context.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == id);
+					if (existingVehicle == null) return NotFound();
+
 					if (vm.ImageFile != null && vm.ImageFile.Length > 0)
 					{
-						var uploadsDir = Path.Combine(_env.WebRootPath, "images", "vehicles");
-						Directory.CreateDirectory(uploadsDir);
-
-						// Delete old image if exists
-						var existingVehicle = await _context.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == id);
-						if (existingVehicle != null && !string.IsNullOrEmpty(existingVehicle.ImagePath))
-						{
-							var oldPath = Path.Combine(uploadsDir, existingVehicle.ImagePath);
-							if (System.IO.File.Exists(oldPath))
-							{
-								System.IO.File.Delete(oldPath);
-							}
-						}
-
-						var uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(vm.ImageFile.FileName);
-						var filePath = Path.Combine(uploadsDir, uniqueName);
-
-						using (var stream = new FileStream(filePath, FileMode.Create))
-						{
-							await vm.ImageFile.CopyToAsync(stream);
-						}
-
-						vm.Vehicle.ImagePath = uniqueName;
+						DeleteImage(existingVehicle.ImagePath);
+						vm.Vehicle.ImagePath = await SaveImageAsync(vm.ImageFile);
 					}
-					else
+					else { vm.Vehicle.ImagePath = existingVehicle.ImagePath; }
+
+					if (vm.GalleryFiles != null && vm.GalleryFiles.Any())
 					{
-						// Keep the existing image path if no new file uploaded
-						var existingVehicle = await _context.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == id);
-						if (existingVehicle != null)
+						// Delete old gallery images
+						var oldGallery = _context.VehicleImage.Where(i => i.VehicleId == id).ToList();
+						foreach (var oldImage in oldGallery)
 						{
-							vm.Vehicle.ImagePath = existingVehicle.ImagePath;
+							DeleteImage(oldImage.ImagePath);
+						}
+						_context.VehicleImage.RemoveRange(oldGallery);
+
+						// Save new gallery images
+						foreach (var file in vm.GalleryFiles)
+						{
+							var savedPath = await SaveImageAsync(file);
+							if (!string.IsNullOrEmpty(savedPath))
+							{
+								_context.VehicleImage.Add(new VehicleImage
+								{
+									VehicleId = id,
+									ImagePath = savedPath
+								});
+							}
 						}
 					}
 
@@ -218,7 +222,8 @@ namespace Proel4wProject_EasyRent.Controllers
 			if (id == null) return NotFound();
 
 			var vehicle = await _context.Vehicle
-				.Include(v => v.Benefits) // Include benefits so they show on the confirmation page
+				.Include(v => v.Benefits) 
+				.Include(v => v.GalleryImages)
 				.FirstOrDefaultAsync(m => m.VehicleId == id);
 
 		if (vehicle == null) return NotFound();
@@ -231,17 +236,13 @@ namespace Proel4wProject_EasyRent.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var vehicle = await _context.Vehicle.FindAsync(id);
+            var vehicle = await _context.Vehicle.Include(v => v.GalleryImages).FirstOrDefaultAsync(v => v.VehicleId == id);
             if (vehicle != null)
             {
-                // Delete image file if exists
-                if (!string.IsNullOrEmpty(vehicle.ImagePath))
+                DeleteImage(vehicle.ImagePath);
+                foreach (var galleryImg in vehicle.GalleryImages)
                 {
-                    var imagePath = Path.Combine(_env.WebRootPath, "images", "vehicles", vehicle.ImagePath);
-                    if (System.IO.File.Exists(imagePath))
-                    {
-                        System.IO.File.Delete(imagePath);
-                    }
+                    DeleteImage(galleryImg.ImagePath);
                 }
 
                 _context.Vehicle.Remove(vehicle);
@@ -257,5 +258,34 @@ namespace Proel4wProject_EasyRent.Controllers
         {
             return _context.Vehicle.Any(e => e.VehicleId == id);
         }
+
+		private async Task<string?> SaveImageAsync(IFormFile? imageFile)
+		{
+			if (imageFile != null && imageFile.Length > 0)
+			{
+				var uploadsDir = Path.Combine(_env.WebRootPath, "images", "vehicles");
+				Directory.CreateDirectory(uploadsDir);
+				var uniqueName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+				var filePath = Path.Combine(uploadsDir, uniqueName);
+				using (var stream = new FileStream(filePath, FileMode.Create))
+				{
+					await imageFile.CopyToAsync(stream);
+				}
+				return uniqueName;
+			}
+			return null;
+		}
+
+		private void DeleteImage(string? imagePath)
+		{
+			if (!string.IsNullOrEmpty(imagePath))
+			{
+				var fullPath = Path.Combine(_env.WebRootPath, "images", "vehicles", imagePath);
+				if (System.IO.File.Exists(fullPath))
+				{
+					System.IO.File.Delete(fullPath);
+				}
+			}
+		}
     }
 }

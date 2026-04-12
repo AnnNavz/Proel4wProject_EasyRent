@@ -1,0 +1,105 @@
+@model Proel4wProject_EasyRent.Models.ReservationSessionModel
+
+@{
+    ViewData["Title"] = "Payment Confirmation";
+}
+
+<style>
+    body { background-color: #ffffff; font-family: 'Inter', sans-serif; }
+    
+    .stepper-container { margin: 40px auto 60px; width: 80%; }
+    .stepper-wrapper { display: flex; justify-content: space-between; align-items: center; position: relative; }
+    .stepper-line-bg { position: absolute; top: 20px; left: 0; width: 100%; height: 3px; background-color: #e5e7eb; z-index: 1; }
+    .stepper-line-fill {
+        position: absolute; top: 20px; left: 0; height: 3px; background-color: #20515d; z-index: 2;
+        width: 50%;
+        animation: fillProgress3 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.5s;
+    }
+
+    @@keyframes fillProgress3 {
+        from { width: 50%; }
+        to { width: 75%; }
+    }
+
+    .stepper-item { position: relative; z-index: 3; text-align: center; display: flex; flex-direction: column; align-items: center; background-color: #ffffff; padding: 0 10px; }
+    .stepper-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e5e7eb; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-bottom: 8px; transition: all 0.5s; }
+    
+    .stepper-item.completed .stepper-circle { background-color: #20515d; }
+    .stepper-item.completed .stepper-label, .stepper-item.active .stepper-label { color: #6b7280; font-weight: 500; }
+    .stepper-label { font-size: 0.8rem; color: #9ca3af; transition: color 0.5s; }
+    
+    .stepper-item.active .stepper-circle {
+        background-color: #20515d;
+        animation: pulseglow 2s infinite;
+    }
+
+    @@keyframes pulseglow {
+        0% { box-shadow: 0 0 0 0 rgba(32, 81, 93, 0.5); }
+        70% { box-shadow: 0 0 0 15px rgba(32, 81, 93, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(32, 81, 93, 0); }
+    }
+
+    .form-box { border: 1px solid #e5e7eb; border-radius: 12px; padding: 32px; background: white; margin-bottom: 24px; position: relative; }
+    .form-section-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; color: #111827; margin-bottom: 10px; }
+
+    /* Inputs */
+    .form-group label { font-size: 0.85rem; color: #20515d; margin-bottom: 6px; }
+    .form-control { border: 1px solid #d1d5db; border-radius: 8px; padding: 12px 14px; font-size: 0.95rem; color: #374151; }
+    .form-control:focus { border-color: #20515d; box-shadow: 0 0 0 0.2rem rgba(32, 81, 93, 0.1); }
+    
+    .btn-confirm { background: #20515d; color: white; border: none; padding: 14px 40px; border-radius: 8px; font-weight: 600; float: right; margin-top: 20px;}
+</style>
+
+<div class="container py-4">
+
+    @* Stepper *@
+    <div class="stepper-container">
+        <div class="stepper-wrapper">
+            <div class="stepper-line-bg"></div>
+            <div class="stepper-line-fill"></div>
+            
+            <div class="stepper-item completed"><div class="stepper-circle">1</div><div class="stepper-label">Vehicle Details</div></div>
+            <div class="stepper-item completed"><div class="stepper-circle">2</div><div class="stepper-label">Reservation Details</div></div>
+            <div class="stepper-item completed"><div class="stepper-circle">3</div><div class="stepper-label">Payment Details</div></div>
+            <div class="stepper-item active"><div class="stepper-circle">4</div><div class="stepper-label">Payment Confirmation</div></div>
+            <div class="stepper-item"><div class="stepper-circle">5</div><div class="stepper-label">Booking Confirmation</div></div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-box shadow-sm">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-section-title mb-0">Payment Confirmation</div>
+                    <i class="bi bi-info-circle fs-5" style="color: #6b7280;"></i>
+                </div>
+                
+                <p class="text-muted" style="font-size: 0.95rem;">Please fill the necessary information as you already complete your payments. Incorrect informations, will not be proceeding for the reservation.</p>
+
+                <form method="post" asp-action="SubmitPaymentConfirmation" asp-controller="Home" class="mt-4">
+                    <div class="row g-4">
+                        <div class="col-md-6 form-group">
+                            <label>Account Name</label>
+                            <input type="text" name="AccountName" class="form-control" placeholder="Please input your account name" value="@Model.AccountName" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Reference Number</label>
+                            <input type="text" name="ReferenceNumber" class="form-control" placeholder="Please input your reference number" value="@Model.ReferenceNumber" required>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <label>Total amount sent</label>
+                            <input type="number" step="0.01" name="AmountSent" class="form-control" placeholder="Please input the total amount sent" value="@(Model.AmountSent > 0 ? Model.AmountSent : "")" required>
+                        </div>
+                    </div>
+
+                    <div class="clearfix">
+                        <button type="submit" class="btn btn-confirm shadow-sm">Proceed</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

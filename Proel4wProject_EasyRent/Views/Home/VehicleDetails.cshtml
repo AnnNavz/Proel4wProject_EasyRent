@@ -1,0 +1,386 @@
+@model Proel4wProject_EasyRent.Models.Vehicle
+@inject Proel4wProject_EasyRent.Data.Proel4wProject_EasyRentContext _context
+
+@{
+    ViewData["Title"] = "Vehicle Details";
+    var userId = Context.Session.GetInt32("UserId");
+    bool isSaved = false;
+    if (userId != null)
+    {
+        isSaved = _context.SavedVehicles.Any(s => s.UserId == userId && s.VehicleId == Model.VehicleId);
+    }
+}
+
+<style>
+    body {
+        background-color: #ffffff; 
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Stepper Styles */
+    .stepper-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 40px auto;
+        width: 80%;
+        position: relative;
+    }
+
+    .stepper-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: #d1d5db;
+        z-index: 1;
+    }
+
+    .stepper-item {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 0 10px;
+    }
+
+    .stepper-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #d1d5db;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .stepper-item.active .stepper-circle {
+        background-color: #20515d;
+    }
+
+    .stepper-label {
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    /* Action Buttons */
+    .action-icon {
+        font-size: 1.5rem;
+        color: #4b5563;
+        margin-left: 15px;
+        cursor: pointer;
+    }
+    
+    /* Image Grid Styles */
+    .img-gallery {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 10px;
+        height: 450px;
+    }
+    
+    .img-gallery img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .img-gallery > div {
+        height: 100%;
+        width: 100%;
+        min-height: 0;
+        min-width: 0;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .img-main {
+        grid-row: 1 / 3;
+        grid-column: 1 / 2;
+    }
+    
+    /* Info Cards */
+    .info-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 24px;
+    }
+
+    .info-card-title {
+        font-weight: bold;
+        color: #111827;
+        margin-bottom: 20px;
+    }
+
+    .spec-row {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .spec-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #20515d;
+        color: white;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+        margin-right: 15px;
+        flex-shrink: 0;
+    }
+
+    .spec-text {
+        font-size: 0.9rem;
+        color: #4b5563;
+        margin-top: 8px;
+    }
+    
+    /* Pricing Checkmarks */
+    .price-list {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .price-list li {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 15px;
+        font-size: 0.85rem;
+        color: #4b5563;
+    }
+    
+    .price-list li::before {
+        content: "✔";
+        position: absolute;
+        left: 0;
+        color: #20515d;
+        font-weight: bold;
+    }
+</style>
+
+<div class="container py-4">
+    
+    @* Top Header Navbar is handled by _Layout.cshtml *@
+
+    <div class="px-md-5">
+        
+        @* Stepper *@
+        <div class="stepper-wrapper">
+            <div class="stepper-item active">
+                <div class="stepper-circle">1</div>
+                <div class="stepper-label">Vehicle Details</div>
+            </div>
+            <div class="stepper-item">
+                <div class="stepper-circle">2</div>
+                <div class="stepper-label">Reservation Details</div>
+            </div>
+            <div class="stepper-item">
+                <div class="stepper-circle">3</div>
+                <div class="stepper-label">Payment Details</div>
+            </div>
+            <div class="stepper-item">
+                <div class="stepper-circle">4</div>
+                <div class="stepper-label">Payment Confirmation</div>
+            </div>
+            <div class="stepper-item">
+                <div class="stepper-circle">5</div>
+                <div class="stepper-label">Booking Confirmation</div>
+            </div>
+        </div>
+
+        @* Title & Actions *@
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0 text-dark">@Model.ModelName</h2>
+            <div class="d-flex align-items-center">
+                <i class="bi @(isSaved ? "bi-heart-fill text-danger" : "bi-heart") action-icon" id="btnSaveVehicle" data-id="@Model.VehicleId" title="Save Vehicle"></i>
+                <i class="bi bi-share action-icon" id="btnShareVehicle" title="Share Vehicle"></i>
+                <i class="bi bi-info-circle action-icon" id="btnReportVehicle" title="Report Vehicle"></i>
+                <a asp-controller="Home" asp-action="ReservationDetails" asp-route-id="@Model.VehicleId" class="btn ms-4 px-4 py-2" style="background-color: #20515d; color: white; border-radius: 8px; font-weight: 600;">Book Now</a>
+            </div>
+        </div>
+
+        @* Image Gallery *@
+        <div class="img-gallery mb-5">
+            <div class="img-main">
+                <img src="@(!string.IsNullOrEmpty(Model.ImagePath) ? $"/images/vehicles/{Model.ImagePath}" : "https://via.placeholder.com/600x800?text=No+Image")" alt="@Model.ModelName" />
+            </div>
+
+            @{
+                var galleryList = Model.GalleryImages?.ToList() ?? new List<Proel4wProject_EasyRent.Models.VehicleImage>();
+            }
+
+            <div>
+                <img src="@(galleryList.Count > 0 ? $"/images/vehicles/{galleryList[0].ImagePath}" : "https://via.placeholder.com/400x300?text=No+Image")" alt="Gallery 1" />
+            </div>
+            <div>
+                <img src="@(galleryList.Count > 2 ? $"/images/vehicles/{galleryList[2].ImagePath}" : "https://via.placeholder.com/400x300?text=No+Image")" alt="Gallery 3" />
+            </div>
+            <div>
+                <img src="@(galleryList.Count > 1 ? $"/images/vehicles/{galleryList[1].ImagePath}" : "https://via.placeholder.com/400x300?text=No+Image")" alt="Gallery 2" />
+            </div>
+            
+            <div style="position: relative; @(galleryList.Count > 4 ? "cursor: pointer;" : "")" 
+                 @(galleryList.Count > 4 ? "data-bs-toggle=modal data-bs-target=#galleryModal" : "")>
+                <img src="@(galleryList.Count > 3 ? $"/images/vehicles/{galleryList[3].ImagePath}" : "https://via.placeholder.com/400x300?text=No+Image")" 
+                     alt="Gallery 4" 
+                     style="@(galleryList.Count > 4 ? "filter: brightness(60%);" : "")" />
+                @if (galleryList.Count > 4)
+                {
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: bold; pointer-events: none;">
+                        +@(galleryList.Count - 4) photos
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Details Section *@
+        <div class="row g-4 mb-5">
+            <div class="col-lg-7">
+                <div class="info-card h-100">
+                    <h5 class="info-card-title">Vehicle Specs & Details</h5>
+                    
+                    <div class="spec-row">
+                        <div class="spec-icon"><i class="bi bi-car-front"></i></div>
+                        <div class="spec-text">Body Type: @(string.IsNullOrEmpty(Model.BodyType) ? "Not Specified" : Model.BodyType)</div>
+                    </div>
+                    
+                    <div class="spec-row">
+                        <div class="spec-icon"><i class="bi bi-gear-fill"></i></div>
+                        <div class="spec-text">Engine: @(string.IsNullOrEmpty(Model.Engine) ? "Not Specified" : Model.Engine)</div>
+                    </div>
+                    
+                    <div class="spec-row">
+                        <div class="spec-icon"><i class="bi bi-speedometer2"></i></div>
+                        <div class="spec-text">Performance: @(string.IsNullOrEmpty(Model.Performance) ? "Not Specified" : Model.Performance)</div>
+                    </div>
+                    
+                    <div class="spec-row">
+                        <div class="spec-icon"><i class="bi bi-sliders"></i></div>
+                        <div class="spec-text">Transmission: @(string.IsNullOrEmpty(Model.Transmission) ? "Not Specified" : Model.Transmission)</div>
+                    </div>
+                    
+                    <div class="spec-row mb-0">
+                        <div class="spec-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+                        <div class="spec-text">Variants: @(string.IsNullOrEmpty(Model.Variants) ? "Not Specified" : Model.Variants)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 d-flex flex-column">
+                @* Driver Assisted Box *@
+                <div class="border rounded-3 p-3 mb-4 d-flex align-items-center flex-shrink-0" style="border-color: #e5e7eb;">
+                    <i class="bi bi-person-vcard text-teal fs-3 me-3" style="color: #20515d;"></i>
+                    <span class="fw-semibold text-secondary">Driver-assisted experience only</span>
+                </div>
+                
+                @* Pricing Box *@
+                <div class="info-card flex-grow-1">
+                    <h2 class="fw-bold mb-1" style="color: #20515d;">₱ @Model.StartingPrice.ToString("N2") <span class="fs-6 fw-normal text-muted">starting @Model.PricePer rate</span></h2>
+                    
+                    <ul class="price-list mt-4">
+                        <li>Convenient for both company use and personal use</li>
+                        <li>5% downpayment upon reservation only for personal use</li>
+                        <li>Full reservation payment only for company use</li>
+                        <li>Non-refundable upon reservation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        @* Ratings and Reviews Section *@
+        <div class="mt-5 mb-5 pb-5 border-top pt-4">
+            <h5 class="fw-bold mb-4">Ratings and Reviews of @Model.ModelName <i class="bi bi-info-circle text-muted ms-1 fs-6" data-bs-toggle="tooltip" data-bs-placement="top" title="All ratings and reviews in EasyRent are from verified renters who must complete a rental before submitting a review." style="cursor: help;"></i></h5>
+            
+            <div class="p-5 text-center bg-light rounded-3" style="border: 1px dashed #ccc;">
+                <i class="bi bi-star text-muted" style="font-size: 3rem;"></i>
+                <h4 class="mt-3 text-secondary">No Ratings Yet</h4>
+                <p class="text-muted">There are no ratings and reviews yet because this vehicle hasn't been rented and reviewed by a user.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@* Gallery Modal *@
+@{
+    var allGalleryImgs = Model.GalleryImages?.ToList() ?? new List<Proel4wProject_EasyRent.Models.VehicleImage>();
+}
+@if (allGalleryImgs.Count > 4)
+{
+    <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0" style="background-color: transparent;">
+                <div class="modal-header border-0" style="position: absolute; right: 0; z-index: 1055;">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="font-size: 1.5rem; filter: invert(1) grayscale(100%) brightness(200%); opacity: 1; padding: 10px;"></button>
+                </div>
+                <div class="modal-body p-0 text-center">
+                    <img src="~/images/vehicles/@Model.ImagePath" class="img-fluid mb-3 rounded" style="max-height: 80vh; object-fit: contain; width: 100%;" />
+                    @foreach (var img in allGalleryImgs)
+                    {
+                        <img src="~/images/vehicles/@img.ImagePath" class="img-fluid mb-3 rounded" style="max-height: 80vh; object-fit: contain; width: 100%;" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Like / Save Vehicle
+            $('#btnSaveVehicle').click(function() {
+                var btn = $(this);
+                var vehicleId = btn.data('id');
+                
+                $.post('/Account/ToggleSavedVehicle', { vehicleId: vehicleId }, function(response) {
+                    if (response.success) {
+                        if (response.isSaved) {
+                            btn.removeClass('bi-heart').addClass('bi-heart-fill text-danger');
+                        } else {
+                            btn.removeClass('bi-heart-fill text-danger').addClass('bi-heart');
+                        }
+                    } else {
+                        alert(response.message || "You must be logged in to save vehicles.");
+                        window.location.href = '/Account/LoginView';
+                    }
+                }).fail(function() {
+                    alert("Error communicating with server.");
+                });
+            });
+
+            // Share Vehicle
+            $('#btnShareVehicle').click(function() {
+                var url = window.location.href;
+                if (navigator.share) {
+                    navigator.share({
+                        title: '@Model.ModelName - EasyRent',
+                        url: url
+                    }).catch(console.error);
+                } else {
+                    navigator.clipboard.writeText(url).then(function() {
+                        alert("Link copied to clipboard!");
+                    });
+                }
+            });
+
+            // Report Vehicle
+            $('#btnReportVehicle').click(function() {
+                alert("Thank you for your report. Our team will investigate this vehicle listing shortly.");
+            });
+        });
+    </script>
+}

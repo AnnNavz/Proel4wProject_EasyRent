@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Proel4wProject_EasyRent.Data;
 using Proel4wProject_EasyRent.Models;
+using Microsoft.AspNetCore.Http;
+using Proel4wProject_EasyRent.Extensions;
 
 namespace Proel4wProject_EasyRent.Controllers
 {
@@ -99,7 +101,225 @@ namespace Proel4wProject_EasyRent.Controllers
             return View(vehicles);
         }
 
+        // GET: Home/VehicleDetails/5
+        public async Task<IActionResult> VehicleDetails(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var vehicle = await _context.Vehicle
+                .Include(v => v.Benefits)
+                .Include(v => v.GalleryImages)
+                .FirstOrDefaultAsync(m => m.VehicleId == id);
+
+            if (vehicle == null) return NotFound();
+
+            return View(vehicle);
+        }
+
+        // GET: Home/ReservationDetails/5
+        public async Task<IActionResult> ReservationDetails(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var vehicle = await _context.Vehicle
+                .FirstOrDefaultAsync(m => m.VehicleId == id);
+
+            if (vehicle == null) return NotFound();
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId != null)
+            {
+                var user = await _context.Users.FindAsync(userId);
+                if (user != null)
+                {
+                    ViewBag.UserFirstName = user.UserFirstName;
+                    ViewBag.UserLastName = user.UserLastName;
+                    ViewBag.UserEmail = user.UserEmail;
+                }
+            }
+
+            return View(vehicle);
+        }
+
+        // POST: Home/SubmitReservationDetails
+        [HttpPost]
+        public async Task<IActionResult> SubmitReservationDetails(ReservationSessionModel model)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("LoginView", "Account");
+            model.UserId = userId.Value;
+
+            // Fetch Vehicle to calculate pricing
+            var vehicle = await _context.Vehicle.FindAsync(model.VehicleId);
+            if (vehicle != null)
+            {
+                model.VehicleName = vehicle.ModelName;
+                model.VehicleType = vehicle.VehicleType;
+                model.BasePrice = vehicle.StartingPrice;
+                model.PricePer = vehicle.PricePer;
+
+                var duration = model.ReturnDate.Add(model.ReturnTime) - model.PickupDate.Add(model.PickupTime);
+                double totalHours = Math.Ceiling(duration.TotalHours);
+                if (totalHours <= 0) totalHours = 1;
+
+                model.TimeAccumulatedDisplay = duration.Days > 0 
+                    ? $"{duration.Days} days and {duration.Hours} hours" 
+                    : $"{totalHours} hours";
+                
+                // Calculate pricing based mathematically on absolute 3-Hour blocks
+                int totalBlocks = (int)Math.Ceiling(totalHours / 3.0);
+                if (totalBlocks <= 0) totalBlocks = 1;
+
+                model.TotalPartialFees = vehicle.StartingPrice; // Cost of the absolute first block
+
+                if (totalBlocks > 1)
+                {
+                    int succeedingBlocks = totalBlocks - 1;
+                    model.SucceedingFee = succeedingBlocks * vehicle.StartingPrice; // Every single overflow fraction incurs a new massive base fee charge
+                }
+                else
+                {
+                    model.SucceedingFee = 0;
+                }
+                
+                // If Personal Use -> 5% Downpayment. If Company -> Total payments without extra.
+                if (model.UsageType == "Personal Use")
+                {
+                    model.Downpayment = (model.TotalPartialFees + model.SucceedingFee) * 0.05m;
+                    model.TotalFeeToBePaid = model.Downpayment;
+                }
+                else
+                {
+                    model.Downpayment = 0;
+                    model.TotalFeeToBePaid = model.TotalPartialFees + model.SucceedingFee;
+                }
+                model.FinalTotalCost = model.TotalPartialFees + model.SucceedingFee;
+            }
+
+            // Save to Session using JSON Extension
+            HttpContext.Session.SetObject("ActiveReservation", model);
+
+            return RedirectToAction("PaymentDetails");
+        }
+
+        // GET: Home/PaymentDetails
+        public IActionResult PaymentDetails()
+        {
+            var model = HttpContext.Session.GetObject<ReservationSessionModel>("ActiveReservation");
+            if (model == null) return RedirectToAction("Vehicles");
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult SubmitPaymentDetails(string PaymentMethod)
+        {
+            var model = HttpContext.Session.GetObject<ReservationSessionModel>("ActiveReservation");
+            if (model == null) return RedirectToAction("Vehicles");
+
+            model.PaymentMethod = PaymentMethod;
+            HttpContext.Session.SetObject("ActiveReservation", model);
+
+            return RedirectToAction("PaymentConfirmation");
+        }
+
+        // GET: Home/PaymentConfirmation
+        public IActionResult PaymentConfirmation()
+        {
+            var model = HttpContext.Session.GetObject<ReservationSessionModel>("ActiveReservation");
+            if (model == null) return RedirectToAction("Vehicles");
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult SubmitPaymentConfirmation(string AccountName, string ReferenceNumber, decimal AmountSent)
+        {
+            var model = HttpContext.Session.GetObject<ReservationSessionModel>("ActiveReservation");
+            if (model == null) return RedirectToAction("Vehicles");
+
+            model.AccountName = AccountName;
+            model.ReferenceNumber = ReferenceNumber;
+            model.AmountSent = AmountSent;
+
+            HttpContext.Session.SetObject("ActiveReservation", model);
+            return RedirectToAction("BookingConfirmation");
+        }
+
+        // GET: Home/BookingConfirmation
+        public IActionResult BookingConfirmation()
+        {
+            var model = HttpContext.Session.GetObject<ReservationSessionModel>("ActiveReservation");
+            if (model == null) return RedirectToAction("Vehicles");
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FinalizeBooking()
+        {
+            var model = HttpContext.Session.GetObject<ReservationSessionModel>("ActiveReservation");
+            if (model == null) return RedirectToAction("Vehicles");
+
+            var reservation = new Reservation
+            {
+                UserId = model.UserId,
+                VehicleId = model.VehicleId,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                PhoneNumber = model.PhoneNumber,
+                EmailAddress = model.EmailAddress,
+                PassengerCapacity = model.PassengerCapacity,
+                PickupDate = model.PickupDate,
+                PickupTime = model.PickupTime,
+                ReturnDate = model.ReturnDate,
+                ReturnTime = model.ReturnTime,
+                UsageType = model.UsageType,
+                PickupAddress = model.PickupAddress,
+                DestinationAddress = model.DestinationAddress,
+                TotalPartialFees = model.TotalPartialFees,
+                SucceedingFee = model.SucceedingFee,
+                Downpayment = model.Downpayment,
+                FinalTotalCost = model.FinalTotalCost,
+                PaymentMethod = model.PaymentMethod,
+                PaymentAccountName = model.AccountName,
+                PaymentReferenceNumber = model.ReferenceNumber,
+                PaymentAmountSent = model.AmountSent,
+                Status = "Pending Verification",
+                DateCreated = DateTime.UtcNow
+            };
+
+            _context.Reservations.Add(reservation);
+            await _context.SaveChangesAsync();
+
+            // Clear session mapping now that it's physically in the database
+            HttpContext.Session.Remove("ActiveReservation");
+
+            TempData["Message"] = "Reservation successfully booked! Waiting for Admin verification.";
+            return RedirectToAction("MyBookings"); 
+        }
+
+        // GET: Home/MyBookings
+        public async Task<IActionResult> MyBookings()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("LoginView", "Account");
+
+            var bookings = await _context.Reservations
+                .Include(r => r.Vehicle)
+                .Where(r => r.UserId == userId)
+                .OrderByDescending(r => r.DateCreated)
+                .ToListAsync();
+
+            return View(bookings);
+        }
+
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult Terms()
         {
             return View();
         }

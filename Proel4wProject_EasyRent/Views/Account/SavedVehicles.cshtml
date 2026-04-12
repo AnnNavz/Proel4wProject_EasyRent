@@ -1,0 +1,44 @@
+@model IEnumerable<Proel4wProject_EasyRent.Models.SavedVehicle>
+
+@{
+    ViewData["Title"] = "Saved Vehicles";
+}
+
+<div class="container py-5 my-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="fw-bold m-0" style="color: #20515d;"><i class="bi bi-heart-fill text-danger me-2"></i> My Saved Vehicles</h2>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center p-5 bg-light rounded-3 shadow-sm border border-dashed">
+            <i class="bi bi-heart text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-4 text-secondary fw-bold">No saved vehicles yet</h4>
+            <p class="text-muted">Start browsing and click the heart icon to save your favorite vehicles!</p>
+            <a asp-controller="Home" asp-action="Vehicles" class="btn mt-3 px-4 py-2" style="background-color: #2D8191; color: white; border-radius: 20px;">Browse Vehicles</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px; overflow: hidden; transition: transform 0.2s;">
+                        <img src="@(!string.IsNullOrEmpty(item.Vehicle?.ImagePath) ? $"/images/vehicles/{item.Vehicle.ImagePath}" : "https://via.placeholder.com/600x400")" class="card-img-top" alt="@item.Vehicle?.ModelName" style="height: 220px; object-fit: cover;">
+                        <div class="card-body p-4 position-relative">
+                            
+                            <h5 class="card-title fw-bold text-dark mb-1">@item.Vehicle?.ModelName</h5>
+                            <p class="text-muted small mb-3">@item.Vehicle?.VehicleType • @item.Vehicle?.Transmission</p>
+                            
+                            <h4 class="fw-bold mb-0" style="color: #20515d;">₱ @item.Vehicle?.StartingPrice.ToString("N2") <span class="fs-6 fw-normal text-muted">/ @item.Vehicle?.PricePer</span></h4>
+                        </div>
+                        <div class="card-footer bg-white border-0 p-4 pt-0">
+                            <a asp-controller="Home" asp-action="VehicleDetails" asp-route-id="@item.VehicleId" class="btn w-100 py-2 fw-semibold" style="background-color: #F0F7F8; color: #2D8191; border-radius: 12px;">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

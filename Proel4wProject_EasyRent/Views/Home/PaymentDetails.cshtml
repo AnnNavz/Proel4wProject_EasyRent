@@ -1,0 +1,252 @@
+@model Proel4wProject_EasyRent.Models.ReservationSessionModel
+
+@{
+    ViewData["Title"] = "Payment Details";
+}
+
+<style>
+    body { background-color: #ffffff; font-family: 'Inter', sans-serif; }
+    
+    .stepper-container { margin: 40px auto 60px; width: 80%; }
+    .stepper-wrapper { display: flex; justify-content: space-between; align-items: center; position: relative; }
+    .stepper-line-bg { position: absolute; top: 20px; left: 0; width: 100%; height: 3px; background-color: #e5e7eb; z-index: 1; }
+    .stepper-line-fill {
+        position: absolute; top: 20px; left: 0; height: 3px; background-color: #20515d; z-index: 2;
+        width: 25%;
+        animation: fillProgress2 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation-delay: 0.5s;
+    }
+
+    @@keyframes fillProgress2 {
+        from { width: 25%; }
+        to { width: 50%; }
+    }
+
+    .stepper-item { position: relative; z-index: 3; text-align: center; display: flex; flex-direction: column; align-items: center; background-color: #ffffff; padding: 0 10px; }
+    .stepper-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e5e7eb; color: white; display: flex; justify-content: center; align-items: center; font-weight: bold; margin-bottom: 8px; transition: all 0.5s; }
+    
+    .stepper-item.completed .stepper-circle { background-color: #20515d; }
+    .stepper-item.completed .stepper-label, .stepper-item.active .stepper-label { color: #6b7280; font-weight: 500; }
+    .stepper-label { font-size: 0.8rem; color: #9ca3af; transition: color 0.5s; }
+    
+    .stepper-item.active .stepper-circle {
+        background-color: #20515d;
+        animation: pulseglow 2s infinite;
+    }
+
+    @@keyframes pulseglow {
+        0% { box-shadow: 0 0 0 0 rgba(32, 81, 93, 0.5); }
+        70% { box-shadow: 0 0 0 15px rgba(32, 81, 93, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(32, 81, 93, 0); }
+    }
+
+    /* Cards */
+    .form-box { border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px 32px; background: white; margin-bottom: 24px; }
+    .form-section-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1rem; color: #111827; margin-bottom: 20px; }
+
+    /* Payment List Details */
+    .pay-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.9rem; color: #4b5563; }
+    .pay-row.total-row { font-size: 1.1rem; font-weight: bold; color: #20515d; margin-top: 24px; }
+
+    /* Radio buttons */
+    .custom-radio { cursor: pointer; display: flex; align-items: center; gap: 10px; }
+    .custom-radio input[type="radio"] { 
+        appearance: none; width: 20px; height: 20px; border: 2px solid #20515d; border-radius: 50%;
+        display: grid; place-content: center;
+    }
+    .custom-radio input[type="radio"]::before {
+        content: ""; width: 10px; height: 10px; border-radius: 50%; transform: scale(0); transition: 120ms transform ease-in-out; background-color: #20515d;
+    }
+    .custom-radio input[type="radio"]:checked::before { transform: scale(1); }
+
+    .qr-container { text-align: center; margin-top: 20px; }
+    .qr-container img { width: 200px; height: 200px; border: 1px solid #e5e7eb; padding: 10px; border-radius: 8px; }
+    
+    .btn-back { background: white; color: #20515d; border: 1px solid #e5e7eb; padding: 12px 40px; border-radius: 8px; font-weight: 600; text-decoration: none; }
+    .btn-confirm { background: #20515d; color: white; border: none; padding: 12px 40px; border-radius: 8px; font-weight: 600; }
+</style>
+
+<div class="container py-4">
+
+    @* Stepper *@
+    <div class="stepper-container">
+        <div class="stepper-wrapper">
+            <div class="stepper-line-bg"></div>
+            <div class="stepper-line-fill"></div>
+            
+            <div class="stepper-item completed"><div class="stepper-circle">1</div><div class="stepper-label">Vehicle Details</div></div>
+            <div class="stepper-item completed"><div class="stepper-circle">2</div><div class="stepper-label">Reservation Details</div></div>
+            <div class="stepper-item active"><div class="stepper-circle">3</div><div class="stepper-label">Payment Details</div></div>
+            <div class="stepper-item"><div class="stepper-circle">4</div><div class="stepper-label">Payment Confirmation</div></div>
+            <div class="stepper-item"><div class="stepper-circle">5</div><div class="stepper-label">Booking Confirmation</div></div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <form id="paymentDetailsForm" method="post" asp-action="SubmitPaymentDetails" asp-controller="Home">
+                
+                @* Pricing Breakdown *@
+                <div class="form-box shadow-sm">
+                    <div class="form-section-title">Payment Details</div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="pay-row"><span>Usage Type:</span> <span>@Model.UsageType</span></div>
+                            <div class="pay-row"><span>Passenger Capacity:</span> <span>@Model.PassengerCapacity passengers</span></div>
+                            <div class="pay-row"><span>Time Accumulated:</span> <span>@Model.TimeAccumulatedDisplay</span></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="pay-row"><span>Total partial fees:</span> <span>₱ @Model.TotalPartialFees.ToString("N2")</span></div>
+                            
+                            @if(Model.SucceedingFee > 0)
+                            {
+                                <div class="pay-row"><span>Succeeding fee:</span> <span>+₱ @Model.SucceedingFee.ToString("N2")</span></div>
+                            }
+
+                            <div class="pay-row mb-4"><span>5% downpayment:</span> <span>-₱ @Model.Downpayment.ToString("N2")</span></div>
+
+                            <div class="pay-row total-row">
+                                <span>Total fee to be pay:</span> 
+                                <span>₱ @Model.TotalFeeToBePaid.ToString("N2")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* Payment Method Selection *@
+                <div class="form-box shadow-sm">
+                    <div class="form-section-title">Payment Method</div>
+                    
+                    <div class="d-flex gap-5 mb-4">
+                        <label class="custom-radio">
+                            <input type="radio" name="PaymentMethodType" value="On-site Payment" required> 
+                            <span>On-site Payment</span>
+                        </label>
+                        <label class="custom-radio">
+                            <input type="radio" name="PaymentMethodType" value="Cashless Payment" required> 
+                            <span>Cashless Payment</span>
+                        </label>
+                    </div>
+
+                    @* On-Site Box Component *@
+                    <div id="onsite-container" style="display: none;">
+                        <p class="text-muted mb-1 fs-6">Please proceed to this given address:</p>
+                        <p class="fw-bold" style="color: #20515d;">Z5-003 Sitio Molila, Upper Mohon, Talisay City, Cebu, Philippines 6045</p>
+                    </div>
+
+                    @* Cashless Box Component *@
+                    <div id="cashless-container" style="display: none;">
+                        <p class="fw-bold fs-6 mb-3">Cashless payment options</p>
+                        <div class="d-flex flex-column gap-3 mb-4">
+                            <label class="custom-radio">
+                                <input type="radio" name="CashlessType" value="GCash"> 
+                                <img src="https://www.google.com/imgres?q=gcash&imgurl=https%3A%2F%2Fmedia.licdn.com%2Fdms%2Fimage%2Fv2%2FD560BAQFt8rVywBrX0Q%2Fcompany-logo_200_200%2FB56ZVP4V6QGsAI-%2F0%2F1740801925973%3Fe%3D2147483647%26v%3Dbeta%26t%3DBh5OBKiJGf8i_GxmZ9d-mjmYFe1bXfsYc0AYVfL3Th4&imgrefurl=https%3A%2F%2Fwww.linkedin.com%2Fcompany%2Fwearegcash%2F&docid=gTOxDHnYaDkg3M&tbnid=LfkYQqs5rZAyEM&vet=12ahUKEwjmmpOw3OiTAxXOk1YBHYvkADkQnPAOegQIFBAB..i&w=200&h=200&hcb=2&ved=2ahUKEwjmmpOw3OiTAxXOk1YBHYvkADkQnPAOegQIFBAB" style="height: 20px;"> <span>GCash</span>
+                            </label>
+                            <label class="custom-radio">
+                                <input type="radio" name="CashlessType" value="BDO Pay"> 
+                                <img src="https://www.google.com/imgres?q=bdo&imgurl=https%3A%2F%2Fyt3.googleusercontent.com%2FW3eaJ7aLkLt-nO8OxDVpsYbAErGV07zavdIB-1GiaBKX-Jx72hawtuVRL9meyB3YeLhujwIT%3Ds900-c-k-c0x00ffffff-no-rj&imgrefurl=https%3A%2F%2Fwww.youtube.com%2Fc%2FBDOUnibankph%2Fabout&docid=P4oXyO--QISGeM&tbnid=nKEp09mkP7pSbM&vet=12ahUKEwi_hLap3OiTAxW_sVYBHQdrJRgQnPAOegQIFRAB..i&w=900&h=900&hcb=2&ved=2ahUKEwi_hLap3OiTAxW_sVYBHQdrJRgQnPAOegQIFRAB" style="height: 20px;">
+                                <span class="fw-bold" style="color: #0038A8; background: yellow; padding: 0 4px;">BDO</span> <span>BDO Pay or BDO Online</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                @* Dynamic QR Display Container *@
+                <div id="qr-panel" class="form-box shadow-sm" style="display: none;">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <div id="qr-provider-icon" class="mb-3">
+                                <!-- Dynamic logo injected via JS -->
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted" style="font-size: 0.85rem;">Account Name:</span>
+                                <span class="fw-bold" style="color: #20515d;" id="qr-account-name"></span>
+                            </div>
+                            <div class="mb-4">
+                                <span class="text-muted" style="font-size: 0.85rem;">Account Number:</span>
+                                <span class="fw-bold" style="color: #20515d;" id="qr-account-num"></span>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.75rem;">
+                                Simple guide instructions:<br>
+                                Step 1: Scan the QR Code and input total amount or simply send money with the given accounts above.<br>
+                                Step 2: Re-check the account name and account number to ensure safety.<br>
+                                Step 3: After the payment, don't forget to note your reference number, as it will serve as our confirmation.
+                            </div>
+                        </div>
+                        <div class="col-md-5 text-center">
+                            <img src="" id="qr-image" style="width: 100%; max-width: 200px; border: 1px solid #ccc; border-radius: 8px;">
+                            <div class="mt-2 text-muted" style="font-size: 0.8rem;">Scan the QR code</div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="FinalPaymentMethod" name="PaymentMethod" value="" />
+
+                <div class="d-flex justify-content-center gap-4 mt-4">
+                    <a href="javascript:history.back()" class="btn btn-back shadow-sm px-5">Back</a>
+                    <button type="submit" class="btn btn-confirm shadow-sm px-5">Proceed</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            
+            // Toggle On-site vs Cashless
+            $('input[name="PaymentMethodType"]').change(function() {
+                var method = $(this).val();
+                if(method === "On-site Payment") {
+                    $('#onsite-container').slideDown();
+                    $('#cashless-container').slideUp();
+                    $('#qr-panel').slideUp();
+                    $('#FinalPaymentMethod').val("On-site Payment");
+                    $('input[name="CashlessType"]').prop('required', false);
+                } else {
+                    $('#onsite-container').slideUp();
+                    $('#cashless-container').slideDown();
+                    $('input[name="CashlessType"]').prop('required', true);
+                    
+                    // Trigger cashless update if already selected
+                    var cashType = $('input[name="CashlessType"]:checked').val();
+                    if(cashType) updateQRPanel(cashType);
+                }
+            });
+
+            // Toggle GCash vs BDO
+            $('input[name="CashlessType"]').change(function() {
+                updateQRPanel($(this).val());
+            });
+
+            function updateQRPanel(type) {
+                $('#qr-panel').slideDown();
+                $('#FinalPaymentMethod').val(type);
+
+                if (type === "GCash") {
+                    $('#qr-provider-icon').html('<img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/GCash_logo.png" style="height: 30px;"> GCash');
+                    $('#qr-account-name').text("K***E**E *NN CA*A*A"); // from screenshot
+                    $('#qr-account-num').text("09194594264");
+                    $('#qr-image').attr("src", "/images/gcash.jpg");
+                } 
+                else if (type === "BDO Pay") {
+                    $('#qr-provider-icon').html('<span class="fw-bold" style="color: #0038A8; background: yellow; padding: 4px;">BDO</span> BDO Pay or BDO Online');
+                    $('#qr-account-name').text("Karmelie Ann S. Canasa"); // from screenshot
+                    $('#qr-account-num').text("001-8201-771-55");
+                    $('#qr-image').attr("src", "/images/bdo.jpg");
+                }
+            }
+
+            // Ensure payment method is assigned before submit
+            $('#paymentDetailsForm').submit(function(e) {
+                var val = $('#FinalPaymentMethod').val();
+                if(!val) {
+                    e.preventDefault();
+                    alert("Please select a payment method.");
+                }
+            });
+        });
+    </script>
+}

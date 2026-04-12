@@ -19,9 +19,11 @@ namespace Proel4wProject_EasyRent.Models
 		[Display(Name = "Starting Price")]
 		public decimal StartingPrice { get; set; }
 
-		[Display(Name = "Vehicle Image")]
+		[Display(Name = "Vehicle Image 1")]
 		[StringLength(255)]
 		public string? ImagePath { get; set; }
+
+
 
 		[Required(ErrorMessage = "Vehicle type is required.")]
 		[StringLength(50)]
@@ -50,6 +52,28 @@ namespace Proel4wProject_EasyRent.Models
 		[Display(Name = "Description")]
 		public string? Description { get; set; }
 
+		// Specs & Details
+		[StringLength(100)]
+		[Display(Name = "Body Type")]
+		public string? BodyType { get; set; }
+
+		[StringLength(100)]
+		[Display(Name = "Engine Specs")]
+		public string? Engine { get; set; }
+
+		[StringLength(100)]
+		[Display(Name = "Performance")]
+		public string? Performance { get; set; }
+
+		[StringLength(100)]
+		[Display(Name = "Transmission")]
+		public string? Transmission { get; set; }
+
+		[StringLength(300)]
+		[Display(Name = "Variants")]
+		public string? Variants { get; set; }
+
 		public virtual ICollection<VehicleBenefit> Benefits { get; set; } = new List<VehicleBenefit>();
+		public virtual ICollection<VehicleImage> GalleryImages { get; set; } = new List<VehicleImage>();
 	}
 }
