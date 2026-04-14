@@ -8,10 +8,16 @@ namespace Proel4wProject_EasyRent.Models
         [Key]
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "User is required.")]
+        [Display(Name = "User")]
         public int UserId { get; set; }
         
+        [Required(ErrorMessage = "Vehicle is required.")]
+        [Display(Name = "Vehicle")]
         public int VehicleId { get; set; }
 
+        [DataType(DataType.DateTime)]
+        [Display(Name = "Date Saved")]
         public DateTime SavedDate { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("UserId")]

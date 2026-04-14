@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Proel4wProject_EasyRent.Data;
 using Proel4wProject_EasyRent.Models;
 using Proel4wProject_EasyRent.Services;
@@ -14,7 +14,7 @@ namespace Proel4wProject_EasyRent.Controllers
 			_context = context;
 		}
 
-		// GET: Account/Register
+		// GET: Register/Register
 		public IActionResult Register()
 		{
 			return View();
@@ -38,8 +38,9 @@ namespace Proel4wProject_EasyRent.Controllers
 				_context.Add(users);
 				await _context.SaveChangesAsync();
 
-				// Redirect to login or home after successful registration
-				return RedirectToAction("Index", "Home");
+				// Set success message and redirect to login page
+				TempData["Message"] = "Registration successful! Please sign in with your new account.";
+				return RedirectToAction("LoginView", "Account");
 			}
 			// If we got this far, something failed; redisplay form with errors
 			return View(users);

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Proel4wProject_EasyRent.Data;
@@ -92,16 +92,38 @@ namespace Proel4wProject_EasyRent.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("UserId,UserFirstName,UserLastName,UserEmail,Password,ConfirmPassword,RoleId")] Users users)
         {
+            if (id != users.UserId)
+            {
+                return NotFound();
+            }
+
             string HashPassword = HashingServices.HashData(users.Password);
             users.Password = HashPassword;
+            users.ConfirmPassword = HashPassword; // Set both to the hashed value
 
             if (ModelState.IsValid)
             {
-                _context.Add(users);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    // FIX: Use Update instead of Add to prevent primary key violations
+                    _context.Update(users);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!UsersExists(users.UserId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewData["UserRole"] = new SelectList(_context.Role, "RoleId", "UserRole", users.RoleId);
             return View(users);
         }
 

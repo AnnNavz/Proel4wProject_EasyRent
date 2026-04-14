@@ -119,7 +119,8 @@ namespace Proel4wProject_EasyRent.Controllers
 
                 ModelState.AddModelError("", "Invalid login attempt.");
             }
-            return View(model);
+            // FIX: Return the correct view name "LoginView" since the view file is LoginView.cshtml
+            return View("LoginView", model);
         }
 
 		// --- PROFILE & SAVED VEHICLES FEATURES ---

@@ -1,6 +1,9 @@
-﻿@{
+@using Proel4wProject_EasyRent.Models
+@{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Dashboard";
+
+    var recentUsers = ViewBag.RecentUsers as List<Users> ?? new List<Users>();
 }
 
 <div class="container-fluid">
@@ -12,28 +15,28 @@
             </span>
             <h2 class="display-6">Admin Dashboard</h2>
         </div>
-        <button class="btn btn-teal shadow-sm">
+        <a asp-controller="Vehicles" asp-action="Create" class="btn btn-teal shadow-sm">
             <i class="bi bi-plus-lg me-2"></i> Add New Vehicle
-        </button>
+        </a>
     </div>
 
     <div class="row g-4">
         <div class="col-md-3">
             <div class="admin-card p-4 text-center">
                 <p class="text-muted small fw-bold mb-1">TOTAL USERS</p>
-                <h3 class="mb-0">1,284</h3>
+                <h3 class="mb-0">@ViewBag.TotalUsers</h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="admin-card p-4 text-center">
                 <p class="text-muted small fw-bold mb-1">ACTIVE RENTALS</p>
-                <h3 class="mb-0 text-success">42</h3>
+                <h3 class="mb-0 text-success">@ViewBag.ActiveRentals</h3>
             </div>
         </div>
         <div class="col-md-3">
             <div class="admin-card p-4 text-center">
                 <p class="text-muted small fw-bold mb-1">FLEET STATUS</p>
-                <h3 class="mb-0">98%</h3>
+                <h3 class="mb-0">@ViewBag.FleetPercentage%</h3>
             </div>
         </div>
     </div>
@@ -48,17 +51,36 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Status</th>
+                                <th>Role</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="fw-semibold">Ann Navasca</td>
-                                <td class="text-muted">ann@example.com</td>
-                                <td><span class="badge bg-success rounded-pill">Active</span></td>
-                                <td><button class="btn btn-sm btn-outline-secondary">View</button></td>
-                            </tr>
+                            @if (recentUsers.Any())
+                            {
+                                foreach (var user in recentUsers)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold">@user.UserFirstName @user.UserLastName</td>
+                                        <td class="text-muted">@user.UserEmail</td>
+                                        <td>
+                                            <span class="badge @(user.RoleId == 1 ? "bg-primary" : "bg-success") rounded-pill">
+                                                @(user.RoleId == 1 ? "Admin" : "Customer")
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Users" asp-action="Details" asp-route-id="@user.UserId"
+                                               class="btn btn-sm btn-outline-secondary">View</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No users found.</td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -74,6 +96,9 @@
                     </a>
                     <a asp-controller="Vehicles" asp-action="Index" class="btn btn-light text-start py-3">
                         <i class="bi bi-car-front me-2"></i> Update Vehicle Prices
+                    </a>
+                    <a asp-controller="Admin" asp-action="Reservations" class="btn btn-light text-start py-3">
+                        <i class="bi bi-calendar-check me-2"></i> View All Bookings
                     </a>
                 </div>
             </div>
