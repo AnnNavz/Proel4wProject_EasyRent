@@ -118,9 +118,8 @@
                         <div class="col-md-4">
                             <label asp-for="Vehicle.Status" class="form-label fw-bold small text-muted text-uppercase">Status</label>
                             <select asp-for="Vehicle.Status" class="form-select">
-                                <option value="Available">🟢 Available</option>
-                                <option value="Rented">🔴 Rented</option>
-                                <option value="Maintenance">🟡 Maintenance</option>
+                                <option value="Active">🟢 Active</option>
+                                <option value="Inactive">🔴 Inactive</option>
                             </select>
                             <span asp-validation-for="Vehicle.Status" class="text-danger small"></span>
                         </div>

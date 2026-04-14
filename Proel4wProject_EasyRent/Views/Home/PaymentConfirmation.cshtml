@@ -43,12 +43,22 @@
     .form-box { border: 1px solid #e5e7eb; border-radius: 12px; padding: 32px; background: white; margin-bottom: 24px; position: relative; }
     .form-section-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; color: #111827; margin-bottom: 10px; }
 
-    /* Inputs */
     .form-group label { font-size: 0.85rem; color: #20515d; margin-bottom: 6px; }
     .form-control { border: 1px solid #d1d5db; border-radius: 8px; padding: 12px 14px; font-size: 0.95rem; color: #374151; }
     .form-control:focus { border-color: #20515d; box-shadow: 0 0 0 0.2rem rgba(32, 81, 93, 0.1); }
     
-    .btn-confirm { background: #20515d; color: white; border: none; padding: 14px 40px; border-radius: 8px; font-weight: 600; float: right; margin-top: 20px;}
+    .btn-back-pay { background: white; color: #20515d; border: 1px solid #e5e7eb; padding: 14px 40px; border-radius: 8px; font-weight: 600; text-decoration: none; }
+    .btn-back-pay:hover { background: #f3f4f6; color: #20515d; }
+    .btn-confirm { background: #20515d; color: white; border: none; padding: 14px 40px; border-radius: 8px; font-weight: 600; }
+    .btn-confirm:hover { background: #1a424c; color: white; }
+
+    .payment-summary-box {
+        background: linear-gradient(135deg, #f0fdfa, #ecfdf5);
+        border: 1px solid #99f6e4;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+    }
 </style>
 
 <div class="container py-4">
@@ -69,6 +79,35 @@
 
     <div class="row justify-content-center">
         <div class="col-lg-8">
+
+            @* Payment Summary Box — shows total, downpayment deduction, and amount to pay *@
+            <div class="payment-summary-box">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold" style="color: #20515d;">Payment Summary</span>
+                    <span class="badge rounded-pill" style="background-color: #20515d;">@Model.PaymentMethod</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem; color: #4b5563;">
+                    <span>Total Rental Cost</span>
+                    <span>₱ @Model.FinalTotalCost.ToString("N2")</span>
+                </div>
+                @if (Model.Downpayment > 0)
+                {
+                    <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem; color: #dc2626;">
+                        <span>Less: 5% Downpayment</span>
+                        <span>- ₱ @Model.Downpayment.ToString("N2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1" style="font-size: 0.85rem; color: #4b5563;">
+                        <span>Remaining Balance (due on pickup)</span>
+                        <span>₱ @((Model.FinalTotalCost - Model.Downpayment).ToString("N2"))</span>
+                    </div>
+                }
+                <hr style="border-color: #99f6e4; margin: 8px 0;">
+                <div class="d-flex justify-content-between">
+                    <span class="fw-bold" style="color: #111827;">Amount to be Paid Now</span>
+                    <span class="fw-bold fs-5" style="color: #20515d;">₱ @Model.TotalFeeToBePaid.ToString("N2")</span>
+                </div>
+            </div>
+
             <div class="form-box shadow-sm">
                 
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -78,24 +117,48 @@
                 
                 <p class="text-muted" style="font-size: 0.95rem;">Please fill the necessary information as you already complete your payments. Incorrect informations, will not be proceeding for the reservation.</p>
 
-                <form method="post" asp-action="SubmitPaymentConfirmation" asp-controller="Home" class="mt-4">
+                <form id="paymentConfirmForm" method="post" asp-action="SubmitPaymentConfirmation" asp-controller="Home" class="mt-4">
                     <div class="row g-4">
                         <div class="col-md-6 form-group">
                             <label>Account Name</label>
                             <input type="text" name="AccountName" class="form-control" placeholder="Please input your account name" value="@Model.AccountName" required>
                         </div>
                         <div class="col-md-6 form-group">
-                            <label>Reference Number</label>
-                            <input type="text" name="ReferenceNumber" class="form-control" placeholder="Please input your reference number" value="@Model.ReferenceNumber" required>
+                            <label>Reference Number <span class="text-muted" style="font-size:0.75rem;">(Numbers only)</span></label>
+                            <input type="text" 
+                                   name="ReferenceNumber" 
+                                   id="referenceNumber"
+                                   class="form-control" 
+                                   placeholder="e.g. 1234567890" 
+                                   value="@Model.ReferenceNumber" 
+                                   inputmode="numeric" 
+                                   pattern="[0-9]+" 
+                                   title="Reference number must contain numbers only"
+                                   required>
+                            <div id="refError" class="text-danger small mt-1" style="display:none;">
+                                <i class="bi bi-exclamation-circle me-1"></i>Reference number must contain numbers only.
+                            </div>
                         </div>
                         <div class="col-md-12 form-group">
-                            <label>Total amount sent</label>
-                            <input type="number" step="0.01" name="AmountSent" class="form-control" placeholder="Please input the total amount sent" value="@(Model.AmountSent > 0 ? Model.AmountSent : "")" required>
+                            <label>Total Amount Sent <span class="text-muted" style="font-size:0.75rem;">(Minimum: ₱ @Model.TotalFeeToBePaid.ToString("N2"))</span></label>
+                            <input type="number" 
+                                   step="0.01" 
+                                   name="AmountSent" 
+                                   id="amountSent"
+                                   class="form-control" 
+                                   placeholder="₱ @Model.TotalFeeToBePaid.ToString("N2")" 
+                                   value="@(Model.AmountSent > 0 ? Model.AmountSent.ToString("F2") : "")" 
+                                   min="@Model.TotalFeeToBePaid.ToString("F2")"
+                                   required>
+                            <div id="amountError" class="text-danger small mt-1" style="display:none;">
+                                <i class="bi bi-exclamation-circle me-1"></i>Amount must be at least ₱ @Model.TotalFeeToBePaid.ToString("N2").
+                            </div>
                         </div>
                     </div>
 
-                    <div class="clearfix">
-                        <button type="submit" class="btn btn-confirm shadow-sm">Proceed</button>
+                    <div class="d-flex justify-content-center gap-3 mt-4 pt-2">
+                        <a asp-action="PaymentDetails" asp-controller="Home" class="btn btn-back-pay shadow-sm px-5">Back</a>
+                        <button type="button" id="btnSubmitPayment" class="btn btn-confirm shadow-sm px-5">Proceed</button>
                     </div>
                 </form>
 
@@ -103,3 +166,88 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var minAmount = @Model.TotalFeeToBePaid.ToString("F2");
+
+            // Block non-numeric input on reference number
+            $('#referenceNumber').on('input', function() {
+                var val = $(this).val();
+                var cleaned = val.replace(/[^0-9]/g, '');
+                if (val !== cleaned) {
+                    $(this).val(cleaned);
+                    $('#refError').show();
+                } else {
+                    $('#refError').hide();
+                }
+            });
+
+            // Prevent paste of non-numeric chars into reference field
+            $('#referenceNumber').on('paste', function(e) {
+                var pasteData = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
+                if (!/^[0-9]+$/.test(pasteData)) {
+                    e.preventDefault();
+                    $('#refError').show();
+                }
+            });
+
+            // Validate amount on change
+            $('#amountSent').on('input change', function() {
+                var val = parseFloat($(this).val());
+                if (!isNaN(val) && val < minAmount) {
+                    $('#amountError').show();
+                } else {
+                    $('#amountError').hide();
+                }
+            });
+
+            // Submit validation
+            $('#btnSubmitPayment').click(function() {
+                var isValid = true;
+
+                // Validate reference number (numbers only)
+                var refVal = $('#referenceNumber').val().trim();
+                if (!/^[0-9]+$/.test(refVal)) {
+                    $('#refError').show();
+                    $('#referenceNumber').css('border-color', '#ef4444');
+                    isValid = false;
+                } else {
+                    $('#refError').hide();
+                    $('#referenceNumber').css('border-color', '');
+                }
+
+                // Validate amount >= min
+                var amountVal = parseFloat($('#amountSent').val());
+                if (isNaN(amountVal) || amountVal < minAmount) {
+                    $('#amountError').show();
+                    $('#amountSent').css('border-color', '#ef4444');
+                    isValid = false;
+                } else {
+                    $('#amountError').hide();
+                    $('#amountSent').css('border-color', '');
+                }
+
+                // Check all required fields
+                $('#paymentConfirmForm').find('input[required]').each(function() {
+                    if (!$(this).val() || $(this).val().trim() === "") {
+                        isValid = false;
+                        $(this).css('border-color', '#ef4444');
+                    }
+                });
+
+                if (isValid) {
+                    var btn = $(this);
+                    btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span> Processing...');
+                    $('#paymentConfirmForm').submit();
+                }
+            });
+
+            // Clear error styling on input
+            $('input').on('input change', function() {
+                $(this).css('border-color', '');
+            });
+        });
+    </script>
+}

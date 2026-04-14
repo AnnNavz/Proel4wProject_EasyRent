@@ -27,7 +27,6 @@ namespace Proel4wProject_EasyRent.Controllers
         // GET: Home/Vehicles
         public async Task<IActionResult> Vehicles(
             string? vehicleType,
-            string? status,
             decimal? minPrice,
             decimal? maxPrice,
             string? searchQuery,
@@ -35,19 +34,16 @@ namespace Proel4wProject_EasyRent.Controllers
         {
             int pageSize = 6;
 
+            // Only show Active vehicles to customers
             var query = _context.Vehicle
                 .Include(v => v.Benefits)
+                .Where(v => v.Status == "Active")
                 .AsQueryable();
 
             // Apply filters
             if (!string.IsNullOrEmpty(vehicleType) && vehicleType != "All")
             {
                 query = query.Where(v => v.VehicleType == vehicleType);
-            }
-
-            if (!string.IsNullOrEmpty(status) && status != "All")
-            {
-                query = query.Where(v => v.Status == status);
             }
 
             if (minPrice.HasValue)
@@ -80,23 +76,42 @@ namespace Proel4wProject_EasyRent.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Get distinct vehicle types for filter dropdown
+            // Get distinct vehicle types for filter dropdown (from active vehicles)
             var vehicleTypes = await _context.Vehicle
+                .Where(v => v.Status == "Active")
                 .Select(v => v.VehicleType)
                 .Distinct()
                 .OrderBy(t => t)
                 .ToListAsync();
 
+            // Compute available units for today for each vehicle
+            var today = DateTime.Today;
+            var vehicleIds = vehicles.Select(v => v.VehicleId).ToList();
+            var todayBookings = await _context.Reservations
+                .Where(r => vehicleIds.Contains(r.VehicleId)
+                    && (r.Status == "Confirmed" || r.Status == "Pending Verification")
+                    && r.PickupDate <= today && r.ReturnDate >= today)
+                .GroupBy(r => r.VehicleId)
+                .Select(g => new { VehicleId = g.Key, BookedCount = g.Count() })
+                .ToListAsync();
+
+            var availableToday = new Dictionary<int, int>();
+            foreach (var v in vehicles)
+            {
+                var booked = todayBookings.FirstOrDefault(b => b.VehicleId == v.VehicleId)?.BookedCount ?? 0;
+                availableToday[v.VehicleId] = Math.Max(0, v.FleetCount - booked);
+            }
+
             // Pass data to view
             ViewBag.VehicleTypes = vehicleTypes;
             ViewBag.CurrentType = vehicleType;
-            ViewBag.CurrentStatus = status;
             ViewBag.CurrentMinPrice = minPrice;
             ViewBag.CurrentMaxPrice = maxPrice;
             ViewBag.CurrentSearch = searchQuery;
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
             ViewBag.TotalItems = totalItems;
+            ViewBag.AvailableToday = availableToday;
 
             return View(vehicles);
         }
@@ -112,6 +127,16 @@ namespace Proel4wProject_EasyRent.Controllers
                 .FirstOrDefaultAsync(m => m.VehicleId == id);
 
             if (vehicle == null) return NotFound();
+
+            // Check if fully booked today
+            var today = DateTime.Today;
+            var bookedToday = await _context.Reservations
+                .CountAsync(r => r.VehicleId == id
+                    && (r.Status == "Confirmed" || r.Status == "Pending Verification")
+                    && r.PickupDate <= today && r.ReturnDate >= today);
+
+            ViewBag.IsFullyBookedToday = bookedToday >= vehicle.FleetCount;
+            ViewBag.AvailableUnitsToday = Math.Max(0, vehicle.FleetCount - bookedToday);
 
             return View(vehicle);
         }
@@ -138,7 +163,60 @@ namespace Proel4wProject_EasyRent.Controllers
                 }
             }
 
+            // Get booked dates for the next 90 days for this vehicle
+            var today = DateTime.Today;
+            var endDate = today.AddDays(90);
+            var reservations = await _context.Reservations
+                .Where(r => r.VehicleId == id
+                    && (r.Status == "Confirmed" || r.Status == "Pending Verification")
+                    && r.ReturnDate >= today && r.PickupDate <= endDate)
+                .Select(r => new { r.PickupDate, r.ReturnDate })
+                .ToListAsync();
+
+            // Build a dictionary of date -> booked unit count
+            var fullyBookedDates = new List<string>();
+            for (var date = today; date <= endDate; date = date.AddDays(1))
+            {
+                var bookedCount = reservations.Count(r => r.PickupDate <= date && r.ReturnDate >= date);
+                if (bookedCount >= vehicle.FleetCount)
+                {
+                    fullyBookedDates.Add(date.ToString("yyyy-MM-dd"));
+                }
+            }
+
+            ViewBag.FullyBookedDatesJson = System.Text.Json.JsonSerializer.Serialize(fullyBookedDates);
+            ViewBag.FleetCount = vehicle.FleetCount;
+
             return View(vehicle);
+        }
+
+        // JSON API: Get booked dates for a vehicle
+        [HttpGet]
+        public async Task<IActionResult> GetBookedDates(int vehicleId)
+        {
+            var vehicle = await _context.Vehicle.FindAsync(vehicleId);
+            if (vehicle == null) return NotFound();
+
+            var today = DateTime.Today;
+            var endDate = today.AddDays(90);
+            var reservations = await _context.Reservations
+                .Where(r => r.VehicleId == vehicleId
+                    && (r.Status == "Confirmed" || r.Status == "Pending Verification")
+                    && r.ReturnDate >= today && r.PickupDate <= endDate)
+                .Select(r => new { r.PickupDate, r.ReturnDate })
+                .ToListAsync();
+
+            var fullyBookedDates = new List<string>();
+            for (var date = today; date <= endDate; date = date.AddDays(1))
+            {
+                var bookedCount = reservations.Count(r => r.PickupDate <= date && r.ReturnDate >= date);
+                if (bookedCount >= vehicle.FleetCount)
+                {
+                    fullyBookedDates.Add(date.ToString("yyyy-MM-dd"));
+                }
+            }
+
+            return Json(new { bookedDates = fullyBookedDates, fleetCount = vehicle.FleetCount });
         }
 
         // POST: Home/SubmitReservationDetails
@@ -153,6 +231,18 @@ namespace Proel4wProject_EasyRent.Controllers
             var vehicle = await _context.Vehicle.FindAsync(model.VehicleId);
             if (vehicle != null)
             {
+                // Server-side validation: check if dates overlap with fully booked dates
+                var overlappingBookings = await _context.Reservations
+                    .CountAsync(r => r.VehicleId == model.VehicleId
+                        && (r.Status == "Confirmed" || r.Status == "Pending Verification")
+                        && r.PickupDate <= model.ReturnDate && r.ReturnDate >= model.PickupDate);
+
+                if (overlappingBookings >= vehicle.FleetCount)
+                {
+                    TempData["Error"] = "Sorry, this vehicle is fully booked for your selected dates. Please choose different dates.";
+                    return RedirectToAction("ReservationDetails", new { id = model.VehicleId });
+                }
+
                 model.VehicleName = vehicle.ModelName;
                 model.VehicleType = vehicle.VehicleType;
                 model.BasePrice = vehicle.StartingPrice;
@@ -175,7 +265,7 @@ namespace Proel4wProject_EasyRent.Controllers
                 if (totalBlocks > 1)
                 {
                     int succeedingBlocks = totalBlocks - 1;
-                    model.SucceedingFee = succeedingBlocks * vehicle.StartingPrice; // Every single overflow fraction incurs a new massive base fee charge
+                    model.SucceedingFee = succeedingBlocks * vehicle.StartingPrice;
                 }
                 else
                 {

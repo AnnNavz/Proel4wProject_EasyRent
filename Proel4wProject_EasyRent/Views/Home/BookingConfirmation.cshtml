@@ -138,12 +138,21 @@
                         <div class="data-row"><div class="data-label">Succeeding fee:</div><div class="data-value">+₱ @Model.SucceedingFee.ToString("N2")</div></div>
                     }
 
-                    <div class="data-row"><div class="data-label">5% downpayment:</div><div class="data-value">-₱ @Model.Downpayment.ToString("N2")</div></div>
-                    <div class="data-row"><div class="data-label" style="color: #111827;">Total fee to be paid:</div><div class="data-value fw-bold" style="color: #20515d;">₱ @Model.TotalFeeToBePaid.ToString("N2")</div></div>
+                    <div class="data-row"><div class="data-label" style="color: #111827;">Total Rental Cost:</div><div class="data-value fw-bold">₱ @Model.FinalTotalCost.ToString("N2")</div></div>
+
+                    @if (Model.Downpayment > 0)
+                    {
+                        <div class="data-row"><div class="data-label" style="color: #dc2626;">Less: 5% Downpayment:</div><div class="data-value" style="color: #dc2626;">-₱ @Model.Downpayment.ToString("N2")</div></div>
+                        <div class="data-row"><div class="data-label">Remaining (due on pickup):</div><div class="data-value">₱ @((Model.FinalTotalCost - Model.Downpayment).ToString("N2"))</div></div>
+                    }
+                    
+                    <div style="border-top: 2px solid #20515d; margin: 12px 0;"></div>
+                    <div class="data-row"><div class="data-label" style="color: #111827; font-size: 0.95rem;">Amount Paid Now:</div><div class="data-value fw-bold fs-5" style="color: #20515d;">₱ @Model.TotalFeeToBePaid.ToString("N2")</div></div>
+
                     <div class="data-row mt-3"><div class="data-label">Payment Method:</div><div class="data-value">@Model.PaymentMethod</div></div>
                     <div class="data-row"><div class="data-label">Account Name:</div><div class="data-value">@Model.AccountName</div></div>
                     <div class="data-row"><div class="data-label">Reference Number:</div><div class="data-value">@Model.ReferenceNumber</div></div>
-                    <div class="data-row"><div class="data-label">Total Amount sent:</div><div class="data-value">₱ @Model.AmountSent.ToString("N2")</div></div>
+                    <div class="data-row"><div class="data-label">Total Amount Sent:</div><div class="data-value">₱ @Model.AmountSent.ToString("N2")</div></div>
 
                     <div class="d-flex justify-content-between mt-5 pt-3">
                         <a href="@Url.Action("ReservationDetails", "Home", new { id = Model.VehicleId })" class="btn btn-edit shadow-sm" style="width: 45%;">Edit</a>

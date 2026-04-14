@@ -33,7 +33,7 @@ namespace Proel4wProject_EasyRent.Models
 		[Required(ErrorMessage = "Status is required.")]
 		[StringLength(20)]
 		[Display(Name = "Status")]
-		public string Status { get; set; } = "Available";
+		public string Status { get; set; } = "Active";
 
 		[Required(ErrorMessage = "Fleet count is required.")]
 		[Range(1, 100, ErrorMessage = "Fleet count must be between 1 and 100.")]

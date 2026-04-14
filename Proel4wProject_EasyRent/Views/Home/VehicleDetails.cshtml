@@ -208,7 +208,16 @@
                 <i class="bi @(isSaved ? "bi-heart-fill text-danger" : "bi-heart") action-icon" id="btnSaveVehicle" data-id="@Model.VehicleId" title="Save Vehicle"></i>
                 <i class="bi bi-share action-icon" id="btnShareVehicle" title="Share Vehicle"></i>
                 <i class="bi bi-info-circle action-icon" id="btnReportVehicle" title="Report Vehicle"></i>
-                <a asp-controller="Home" asp-action="ReservationDetails" asp-route-id="@Model.VehicleId" class="btn ms-4 px-4 py-2" style="background-color: #20515d; color: white; border-radius: 8px; font-weight: 600;">Book Now</a>
+                @if ((bool)(ViewBag.IsFullyBookedToday ?? false))
+                {
+                    <span class="btn ms-4 px-4 py-2 disabled" style="background-color: #9ca3af; color: white; border-radius: 8px; font-weight: 600; pointer-events: none; opacity: 0.7;">
+                        <i class="bi bi-calendar-x me-2"></i>Fully Booked Today
+                    </span>
+                }
+                else
+                {
+                    <a asp-controller="Home" asp-action="ReservationDetails" asp-route-id="@Model.VehicleId" class="btn ms-4 px-4 py-2" style="background-color: #20515d; color: white; border-radius: 8px; font-weight: 600;">Book Now</a>
+                }
             </div>
         </div>
 

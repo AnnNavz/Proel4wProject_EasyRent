@@ -178,32 +178,7 @@
         background-color: #f1f5f9;
     }
 
-    /* Status Badge */
-    #vehicles-page .status-badge {
-        position: absolute;
-        top: 22px;
-        left: 22px;
-        padding: 6px 16px;
-        border-radius: 8px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
 
-    #vehicles-page .status-available {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-    }
-
-    #vehicles-page .status-rented {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
-
-    #vehicles-page .status-maintenance {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-    }
 
     /* Wishlist Button */
     #vehicles-page .wish-btn {
@@ -480,11 +455,10 @@
         <!-- Filter Bar -->
         <form method="get" asp-action="Vehicles" asp-controller="Home" class="filter-bar mb-4">
             <div class="row g-3 align-items-end">
-                <div class="col-lg-2 col-md-4 col-6">
+                <div class="col-lg-3 col-md-4 col-6">
                     <label class="form-label">Vehicle Type</label>
                     @{
                         string currentType = ViewBag.CurrentType ?? "All";
-                        string currentStatus = ViewBag.CurrentStatus ?? "All";
                     }
                     <select name="vehicleType" class="form-select">
                         @if (currentType == "All")
@@ -508,43 +482,7 @@
                         }
                     </select>
                 </div>
-                <div class="col-lg-2 col-md-4 col-6">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select">
-                        @if (currentStatus == "All")
-                        {
-                            <option value="All" selected="selected">All Status</option>
-                        }
-                        else
-                        {
-                            <option value="All">All Status</option>
-                        }
-                        @if (currentStatus == "Available")
-                        {
-                            <option value="Available" selected="selected">Available</option>
-                        }
-                        else
-                        {
-                            <option value="Available">Available</option>
-                        }
-                        @if (currentStatus == "Rented")
-                        {
-                            <option value="Rented" selected="selected">Rented</option>
-                        }
-                        else
-                        {
-                            <option value="Rented">Rented</option>
-                        }
-                        @if (currentStatus == "Maintenance")
-                        {
-                            <option value="Maintenance" selected="selected">Maintenance</option>
-                        }
-                        else
-                        {
-                            <option value="Maintenance">Maintenance</option>
-                        }
-                    </select>
-                </div>
+
                 <div class="col-lg-2 col-md-4 col-6">
                     <label class="form-label">Min Price (₱)</label>
                     <input type="number" name="minPrice" class="form-control" placeholder="0" value="@ViewBag.CurrentMinPrice" />
@@ -580,15 +518,12 @@
         @if (Model.Any())
         {
             <div class="row g-4">
+                @{
+                    var availableTodayDict = ViewBag.AvailableToday as Dictionary<int, int> ?? new Dictionary<int, int>();
+                }
                 @foreach (var vehicle in Model)
                 {
-                    // Determine status class
-                    string statusClass = vehicle.Status switch
-                    {
-                        "Rented" => "status-rented",
-                        "Maintenance" => "status-maintenance",
-                        _ => "status-available"
-                    };
+                    var unitsAvailable = availableTodayDict.ContainsKey(vehicle.VehicleId) ? availableTodayDict[vehicle.VehicleId] : vehicle.FleetCount;
 
                     <div class="col-lg-6 col-md-6">
                         <div class="vehicle-card">
@@ -606,8 +541,6 @@
                                     </div>
                                 }
 
-                                <!-- Status Badge -->
-                                <div class="status-badge @statusClass">@vehicle.Status</div>
 
                                 <!-- Wishlist Button -->
                                 @{
@@ -631,10 +564,20 @@
                                         <div class="v-title">@vehicle.ModelName</div>
                                         <div class="v-type">@vehicle.VehicleType</div>
                                     </div>
-                                    <div class="avail-pill">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                        @vehicle.AvailableFleet available
-                                    </div>
+                                    @if (unitsAvailable > 0)
+                                    {
+                                        <div class="avail-pill">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            @unitsAvailable available
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="avail-pill" style="background: #fef2f2; border-color: #fecaca; color: #dc2626;">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Fully Booked
+                                        </div>
+                                    }
                                 </div>
 
                                 @if (!string.IsNullOrEmpty(vehicle.Description))
@@ -670,7 +613,6 @@
                         <a asp-action="Vehicles" asp-controller="Home"
                            asp-route-page="@(currentPage - 1)"
                            asp-route-vehicleType="@ViewBag.CurrentType"
-                           asp-route-status="@ViewBag.CurrentStatus"
                            asp-route-minPrice="@ViewBag.CurrentMinPrice"
                            asp-route-maxPrice="@ViewBag.CurrentMaxPrice"
                            asp-route-searchQuery="@ViewBag.CurrentSearch"
@@ -688,7 +630,6 @@
                         <a asp-action="Vehicles" asp-controller="Home"
                            asp-route-page="@i"
                            asp-route-vehicleType="@ViewBag.CurrentType"
-                           asp-route-status="@ViewBag.CurrentStatus"
                            asp-route-minPrice="@ViewBag.CurrentMinPrice"
                            asp-route-maxPrice="@ViewBag.CurrentMaxPrice"
                            asp-route-searchQuery="@ViewBag.CurrentSearch"
@@ -702,7 +643,6 @@
                         <a asp-action="Vehicles" asp-controller="Home"
                            asp-route-page="@(currentPage + 1)"
                            asp-route-vehicleType="@ViewBag.CurrentType"
-                           asp-route-status="@ViewBag.CurrentStatus"
                            asp-route-minPrice="@ViewBag.CurrentMinPrice"
                            asp-route-maxPrice="@ViewBag.CurrentMaxPrice"
                            asp-route-searchQuery="@ViewBag.CurrentSearch"
