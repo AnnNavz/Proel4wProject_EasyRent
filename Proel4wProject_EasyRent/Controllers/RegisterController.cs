@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Proel4wProject_EasyRent.Data;
 using Proel4wProject_EasyRent.Models;
 using Proel4wProject_EasyRent.Services;
@@ -25,8 +26,20 @@ namespace Proel4wProject_EasyRent.Controllers
 		// Added ConfirmPassword to the Bind attribute
 		public async Task<IActionResult> Register([Bind("UserFirstName,UserLastName,UserEmail,Password,ConfirmPassword")] Users users)
 		{
+			// We assign these manually, so don't let them cause validation errors
+			ModelState.Remove("RoleId");
+			ModelState.Remove("Role");
+
 			if (ModelState.IsValid)
 			{
+				// Check if email already exists
+				var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserEmail == users.UserEmail);
+				if (existingUser != null)
+				{
+					ModelState.AddModelError("UserEmail", "Email address is already registered.");
+					return View(users);
+				}
+
 				// 1. Hash the password
 				string hash = HashingServices.HashData(users.Password);
 				users.Password = hash;
