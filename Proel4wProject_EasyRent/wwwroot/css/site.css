@@ -12,6 +12,12 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
+/* Hide browser default password reveal and clear buttons */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
 html {
   position: relative;
   min-height: 100%;
